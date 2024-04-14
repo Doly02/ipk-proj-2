@@ -15,8 +15,8 @@
  *  @brief          Implements Parsing Sniffer Configuration.
  * ****************************/
 
-#ifndef SNIFFERCONFIG_HPP
-#define SNIFFERCONFIG_HPP
+#ifndef MACROS_HPP
+#define MACROS_HPP
 /************************************************/
 /*             Macro Definitions                */
 /************************************************/
@@ -24,4 +24,4 @@ constexpr int JUST_INTERFACE = 1;
 constexpr int CORRECT = 0;
 
 
-#endif // SNIFFERCONFIG_HPP
+#endif // MACROS_HPP

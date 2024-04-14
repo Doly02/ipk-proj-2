@@ -30,12 +30,12 @@ int main(int argc, char *argv[]) {
     int retVal = 0;
     SnifferConfig config;
     retVal = config.parseArguments(argc, argv);
-    if (1 == retVal) {
+    if (JUST_INTERFACE == retVal) {
         NetworkInterfacePrinter printer;
         printer.printAvailableInterfaces();
         return 0;
     }
-    else if (retVal != 0) {
+    else if (retVal != CORRECT) {
         return retVal;
     }
 
