@@ -19,103 +19,101 @@
 /*                  Libraries                   */
 /************************************************/
 #include "../include/SnifferConfig.hpp"
+#include "../include/macros.hpp"
 /************************************************/
 /*               Class Methods                  */
 /************************************************/
 
 
 SnifferConfig::SnifferConfig()
-    : port(0), tcp(false), udp(false), arp(false),
-      icmp4(false), icmp6(false), igmp(false),
-      mld(false), ndp(false), num(1), numOfProtocols(0),
-      portSource(false), portDestination(false) {}
+    : interface(""),
+      port(-1),
+      tcp(false),
+      udp(false),
+      arp(false),
+      icmp4(false),
+      icmp6(false),
+      igmp(false),
+      mld(false),
+      ndp(false),
+      num(1),
+      portSource(false),
+      portDestination(false),
+      numOfProtocols(0)
+{}
 
 SnifferConfig::~SnifferConfig() {}
 
 
-void SnifferConfig::parseArguments(int argc, char *argv[]) {
-    int option;
-    int optionIndex = 0;
-
-    const char* shortOptions = "i:p:tu:n:";
-    const struct option longOptions[] = {
-        {"interface", required_argument, nullptr, 'i'},
-        {"tcp", no_argument, nullptr, 't'},
-        {"udp", no_argument, nullptr, 'u'},
-        {"port-source", required_argument, nullptr, 'p'},
-        {"port-destination", required_argument, nullptr, 'p'},
-        {"arp", no_argument, nullptr, 0},
-        {"icmp4", no_argument, nullptr, 0},
-        {"icmp6", no_argument, nullptr, 0},
-        {"igmp", no_argument, nullptr, 0},
-        {"mld", no_argument, nullptr, 0},
-        {"ndp", no_argument, nullptr, 0},
-        {"n", required_argument, nullptr, 'n'},
-        {nullptr, 0, nullptr, 0}
-    };
-
-    while ((option = getopt_long(argc, argv, shortOptions, longOptions, &optionIndex)) != -1) {
-        switch (option) {
-            case 'i':
-                interface = optarg;
-                break;
-            case 't':
-                tcp = true;
-                break;
-            case 'u':
-                udp = true;
-                break;
-            case 'p':
-                port = std::stoi(optarg);
-                if (strcmp(longOptions[optionIndex].name, "port-source") == 0) {
-                    portSource = true;
-                } else if (strcmp(longOptions[optionIndex].name, "port-destination") == 0) {
-                    portDestination = true;
-                }
-                break;
-            case 'n':
-                num = std::stoi(optarg);
-                break;
-            case 0:
-                if (strcmp(longOptions[optionIndex].name, "arp") == 0) 
-                {
-                    numOfProtocols++;
-                    arp = true;
-                }
-                else if (strcmp(longOptions[optionIndex].name, "icmp4") == 0)
-                {
-                    numOfProtocols++;
-                    icmp4 = true;
-                } 
-                else if (strcmp(longOptions[optionIndex].name, "icmp6") == 0) 
-                {
-                    numOfProtocols++;
-                    icmp6 = true;
-                }
-                else if (strcmp(longOptions[optionIndex].name, "igmp") == 0) 
-                {
-                    numOfProtocols++;
-                    igmp = true;
-                }
-                else if (strcmp(longOptions[optionIndex].name, "mld") == 0)
-                {
-                    numOfProtocols++;
-                    mld = true;
-                }
-                else if (strcmp(longOptions[optionIndex].name, "ndp") == 0)
-                {
-                    numOfProtocols++;
-                    ndp = true;
-                } 
-                break;
-            case '?':
-                // Error in getopt, unknown option or missing option argument
-                std::cerr << "Error: Invalid option or missing argument." << std::endl;
-                exit(EXIT_FAILURE);
+int SnifferConfig::parseArguments(int argc, char *argv[]) {
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "-i" || arg == "--interface") {
+            if (i + 1 < argc) { // Make sure we aren't at the end of argv!
+                interface = argv[++i]; // Increment 'i' so we don't get the argument as the next loop iteration
+            }
+            else {
+                interface = "";
+                return 1;
+            }
+        } else if (arg == "-t" || arg == "--tcp") {
+            tcp = true;
+            numOfProtocols++;
+        } else if (arg == "-u" || arg == "--udp") {
+            udp = true;
+            numOfProtocols++;
+        } else if (arg == "-p") {
+            if (i + 1 < argc) { // Check for the next argument to be a port number
+                port = std::stoi(argv[++i]);
+                portSource = true;
+                portDestination = true;
+            }
+        } else if (arg == "--port-source") {
+            if (i + 1 < argc) {
+                port = std::stoi(argv[++i]);
+                portSource = true;
+            }
+        } else if (arg == "--port-destination") {
+            if (i + 1 < argc) {
+                port = std::stoi(argv[++i]);
+                portDestination = true;
+            }
+        } else if (arg == "-n") {
+            if (i + 1 < argc) {
+                num = std::stoi(argv[++i]);
+            }
+        }
+        else if (arg == "arp") {
+            arp = true;
+            numOfProtocols++;
+        }
+        else if (arg == "icmp4") {
+            icmp4 = true;
+            numOfProtocols++;
+        }
+        else if (arg == "icmp6") {
+            icmp6 = true;
+            numOfProtocols++;
+        }
+        else if (arg == "igmp") {
+            igmp = true;
+            numOfProtocols++;
+        }
+        else if (arg == "mld") {
+            mld = true;
+            numOfProtocols++;
+        }
+        else if (arg == "ndp") {
+            ndp = true;
+            numOfProtocols++;
+        }
+        else if (arg == "help") {
+            printUsage();
+            exit(0);
         }
     }
+    return 0;
 }
-
 
 void SnifferConfig::printUsage() {
     std::cout << "Usage: ./ipk-sniffer [-i interface | --interface interface] "
@@ -159,9 +157,28 @@ std::string SnifferConfig::generateFilter() const
     else if(numOfProtocols == 1)
     {
         if (tcp)    // Vyresit porty
-            filter += "tcp";
+        {
+            printf("DBG src: %d, dst: %d\n", portSource, portDestination);
+            if (portSource && portDestination)
+                filter += "tcp and port " + std::to_string(port);
+            else if (portSource)
+                filter += "tcp and src port " + std::to_string(port);
+            else if (portDestination)
+                filter += "tcp and dst port " + std::to_string(port);
+            else
+                filter += "tcp";
+        }
         else if (udp)
-            filter += "udp";
+        {
+            if (portSource && portDestination)
+                filter += "udp and port " + std::to_string(port);
+            else if (portSource)
+                filter += "udp and src port " + std::to_string(port);
+            else if (portDestination)
+                filter += "udp and dst port " + std::to_string(port);
+            else
+                filter += "udp";
+        }
         else if (arp)
             filter += "arp";
         else if (icmp4)
@@ -177,19 +194,21 @@ std::string SnifferConfig::generateFilter() const
     }
     else 
     {
-
         // Store The Active Protocols Into Filter
         for (const auto& proto : protocols) 
         {
             // Protocol Was Defined In Program Argument
             if (proto.isActive) 
             {
-                
                 if (true == first)
                 {
-                    if ((proto.name == "tcp" || proto.name == "udp")) 
+                    if ((proto.name == "tcp" || proto.name == "udp") && port != -1) 
                     {
-                        filter += " port " + std::to_string(port);
+                        printf("Port: %d\n", port);
+                        if (portSource)
+                            filter += proto.name + " and src port " + std::to_string(port);
+                        else if (portDestination)
+                            filter += proto.name + " and dst port " + std::to_string(port);
                     }
                     else 
                     {
@@ -200,9 +219,12 @@ std::string SnifferConfig::generateFilter() const
                 }
                 else 
                 {
-                    if ((proto.name == "tcp" || proto.name == "udp")) 
+                    if ((proto.name == "tcp" || proto.name == "udp") && port != -1) 
                     {
-                        filter += " port " + std::to_string(port);
+                        if (portSource)
+                            filter += " or " + proto.name + " and src port " + std::to_string(port);
+                        else if (portDestination)
+                            filter += " or " + proto.name + " and dst port " + std::to_string(port);
                     }
                     else 
                     {
@@ -213,6 +235,7 @@ std::string SnifferConfig::generateFilter() const
             }
         }
     }
+    return filter;
 }
 
 /// Method to Serialize Sniffer Configuration Into Filter

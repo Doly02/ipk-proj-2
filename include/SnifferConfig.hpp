@@ -22,15 +22,18 @@
 #include <iostream>
 #include <getopt.h>
 #include <string>
+#include "macros.hpp"
 #include <vector>  
 /************************************************/
 /*               Class Definition               */
 /************************************************/
+/*
 struct Protocol {
     std::string name;
-    bool *isActive;
-    Protocol(const std::string& n, bool* active) : name(n), isActive(active) {}
+    bool isActive; 
+    Protocol(const std::string& n, bool active) : name(n), isActive(active) {}
 };
+*/
 
 
 class SnifferConfig
@@ -55,26 +58,23 @@ class SnifferConfig
     public:
         struct Protocol {
             std::string name;
-            bool& isActive;
+            bool isActive; 
             Protocol(const std::string& n, bool active) : name(n), isActive(active) {}
         };
 
         SnifferConfig(/* args */);
         ~SnifferConfig();
 
-    SnifferConfig(/* args */);
-    ~SnifferConfig();
+        std::string getInterface() const { return interface; }
+        int getPort() const { return port; }
+        bool isTcp() const { return tcp; }
+        bool isUdp() const { return udp; }
 
-    std::string getInterface() const { return interface; }
-    int getPort() const { return port; }
-    bool isTcp() const { return tcp; }
-    bool isUdp() const { return udp; }
+        int parseArguments(int argc, char *argv[]);
 
-    void parseArguments(int argc, char *argv[]);
+        void printUsage();
 
-    void printUsage();
-
-    std::string generateFilter() const;
+        std::string generateFilter() const;
 };
 
 
