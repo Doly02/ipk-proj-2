@@ -17,7 +17,9 @@
 
 #ifndef SNIFFERCONFIG_HPP
 #define SNIFFERCONFIG_HPP
-
+/************************************************/
+/*             Macro Definitions                */
+/************************************************/
 constexpr int JUST_INTERFACE = 1;
 constexpr int CORRECT = 0;
 

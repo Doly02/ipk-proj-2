@@ -27,19 +27,10 @@
 /************************************************/
 /*               Class Definition               */
 /************************************************/
-/*
-struct Protocol {
-    std::string name;
-    bool isActive; 
-    Protocol(const std::string& n, bool active) : name(n), isActive(active) {}
-};
-*/
-
 
 class SnifferConfig
 {
     private:
-        std::string interface;
         int port;                   //<! Zero Means That Port Filter is Not Enabled
         bool tcp;                   //<! TCP Packets
         bool udp;                   //<! UDP Packets
@@ -49,13 +40,14 @@ class SnifferConfig
         bool igmp;                  //<! IGMP Packets (Internet Group Management Protocol)
         bool mld;                   //<! MLD Packets (Multicast Listener Discovery)
         bool ndp;                   //<! NDP Packets (Neighbor Discovery Protocol) 
-        int num;                    //<! Number of Packets to Capture
         bool portSource;            //<! Capture On Source Port
         bool portDestination;       //<! Capture On Destination Port 
     
         int numOfProtocols;
 
     public:
+        std::string interface;
+        int num;                    //<! Number of Packets to Capture
         struct Protocol {
             std::string name;
             bool isActive; 

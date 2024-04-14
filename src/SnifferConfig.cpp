@@ -24,10 +24,8 @@
 /*               Class Methods                  */
 /************************************************/
 
-
 SnifferConfig::SnifferConfig()
-    : interface(""),
-      port(-1),
+    : port(-1),
       tcp(false),
       udp(false),
       arp(false),
@@ -36,10 +34,11 @@ SnifferConfig::SnifferConfig()
       igmp(false),
       mld(false),
       ndp(false),
-      num(1),
       portSource(false),
       portDestination(false),
-      numOfProtocols(0)
+      numOfProtocols(0),
+      interface(""),
+      num(1)
 {}
 
 SnifferConfig::~SnifferConfig() {}

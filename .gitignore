@@ -4,7 +4,8 @@
 
 # Executable Program
 ipk-sniffer
-
+# Visual Studio Code Settings
+.vscode
 # Compiled Object files
 *.slo
 *.lo
