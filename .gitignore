@@ -2,6 +2,9 @@
 # Prerequisites
 *.d
 
+# Executable Program
+ipk-sniffer
+
 # Compiled Object files
 *.slo
 *.lo
@@ -93,7 +96,8 @@ dkms.conf
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*

@@ -39,6 +39,7 @@ all: $(TARGET)
 # Main target
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	rm -f $(OBJECTS)
 
 # Object compilation
 %.o: %.cpp $(HEADERS)
