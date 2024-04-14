@@ -18,12 +18,12 @@ CFLAGS = -std=c++17 -Wall -Wextra -Werror -Wshadow -Wnon-virtual-dtor -pedantic 
 DEBUG_CFLAGS = -fsanitize=address -g -std=c++17 -Wall -Wextra -Werror -Wshadow -Wnon-virtual-dtor -pedantic
 
 # Header Files
-HEADERS = include/SnifferConfig.hpp include/NetworkInterfacePrinter.hpp
+HEADERS = include/SnifferConfig.hpp include/NetworkInterfacePrinter.hpp include/PrintIPv4Packet.hpp include/IPv4PacketSniffer.hpp
 # Libraries
 LIBS = -lpcap
 
 # Source Files
-SOURCES = src/SnifferConfig.cpp src/NetworkInterfacePrinter.cpp src/main.cpp
+SOURCES = src/SnifferConfig.cpp src/NetworkInterfacePrinter.cpp src/PrintIPv4Packet.cpp src/IPv4PacketSniffer.cpp src/main.cpp
 # Object Files 
 OBJECTS = $(SOURCES:.cpp=.o)
 
