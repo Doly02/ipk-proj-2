@@ -160,22 +160,22 @@ std::string SnifferConfig::generateFilter() const
         {
             printf("DBG src: %d, dst: %d\n", portSource, portDestination);
             if (portSource && portDestination)
-                filter += "tcp and port " + std::to_string(port);
+                filter += "(tcp and port " + std::to_string(port)+ ")";
             else if (portSource)
-                filter += "tcp and src port " + std::to_string(port);
+                filter += "(tcp and src port " + std::to_string(port)+ ")";
             else if (portDestination)
-                filter += "tcp and dst port " + std::to_string(port);
+                filter += "(tcp and dst port " + std::to_string(port)+ ")";
             else
                 filter += "tcp";
         }
         else if (udp)
         {
             if (portSource && portDestination)
-                filter += "udp and port " + std::to_string(port);
+                filter += "(udp and port " + std::to_string(port)+ ")";
             else if (portSource)
-                filter += "udp and src port " + std::to_string(port);
+                filter += "(udp and src port " + std::to_string(port)+ ")";
             else if (portDestination)
-                filter += "udp and dst port " + std::to_string(port);
+                filter += "(udp and dst port " + std::to_string(port)+ ")";
             else
                 filter += "udp";
         }
@@ -206,9 +206,9 @@ std::string SnifferConfig::generateFilter() const
                     {
                         printf("Port: %d\n", port);
                         if (portSource)
-                            filter += proto.name + " and src port " + std::to_string(port);
+                            filter += "(" + proto.name + " and src port " + std::to_string(port) + ")";
                         else if (portDestination)
-                            filter += proto.name + " and dst port " + std::to_string(port);
+                            filter += "(" + proto.name + " and dst port " + std::to_string(port) + ")";
                     }
                     else 
                     {
