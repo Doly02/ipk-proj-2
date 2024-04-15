@@ -122,6 +122,17 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
                 std::cout << "ICMP code: " << static_cast<int>(icmp_hdr->code) << std::endl;
                 break;
             }
+            case IPPROTO_IGMP: {
+                // IGMP Header (Extracts Specific Informations For IGMP Message)
+                struct igmp *igmp_hdr = (struct igmp *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                // Type of Typ IGMP Message (e.g. Query, Report)
+                std::cout << "IGMP type: " << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
+                // Max Response Time (Used in IGMP Query)
+                std::cout << "IGMP max resp time: " << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
+                // Target Group Adress For IGMP Message
+                std::cout << "IGMP group address: " << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
+                break;                
+            }
         }
         std::cout << format_hex(packet, header->caplen) << std::endl;
     }

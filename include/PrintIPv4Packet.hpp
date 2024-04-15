@@ -33,10 +33,11 @@
 #include <netinet/ip.h>
 #include <net/ethernet.h>           // Change This Is For Mac OS -> For Ubuntu #include <netinet/ether.h>
 #include <netinet/if_ether.h>       // For ether_header a ether_arp
-#include <netinet/tcp.h>
-#include <netinet/udp.h>
-#include <netinet/ip_icmp.h> 
-#include <arpa/inet.h>
+#include <netinet/igmp.h>           // For IGMP header
+#include <netinet/tcp.h>            // For TCP header
+#include <netinet/udp.h>            // For UDP header
+#include <netinet/ip_icmp.h>        // For ICMP header
+#include <arpa/inet.h>              
 /************************************************/
 /*            Function Definitions              */
 /************************************************/
