@@ -90,7 +90,15 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
     std::cout << "dst MAC: " << format_mac(eth_header->ether_dhost) << std::endl;
     std::cout << "frame length: " << header->len << " bytes" << std::endl;
 
-    if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
+    // Check If Packet Is ARP
+    if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
+        struct ether_arp *arp_hdr = (struct ether_arp *)(packet + sizeof(struct ether_header));
+        std::cout << "Sender MAC: " << format_mac(arp_hdr->arp_sha) << std::endl;
+        std::cout << "Sender IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
+        std::cout << "Target MAC: " << format_mac(arp_hdr->arp_tha) << std::endl;
+        std::cout << "Target IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
+    } 
+    else if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
         struct ip *ip_hdr = (struct ip *)(packet + sizeof(struct ether_header));
         std::cout << "src IP: " << format_ip(ip_hdr->ip_src) << std::endl;
         std::cout << "dst IP: " << format_ip(ip_hdr->ip_dst) << std::endl;

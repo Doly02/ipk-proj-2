@@ -31,7 +31,8 @@
 #include <ctime>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <net/ethernet.h> // Change This Is For Mac OS -> For Ubuntu #include <netinet/ether.h>
+#include <net/ethernet.h>           // Change This Is For Mac OS -> For Ubuntu #include <netinet/ether.h>
+#include <netinet/if_ether.h>       // For ether_header a ether_arp
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <netinet/ip_icmp.h> 
