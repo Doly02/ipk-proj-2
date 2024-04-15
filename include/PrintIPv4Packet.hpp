@@ -37,6 +37,8 @@
 #include <netinet/tcp.h>            // For TCP header
 #include <netinet/udp.h>            // For UDP header
 #include <netinet/ip_icmp.h>        // For ICMP header
+#include <netinet/ip6.h>            // Include for IPv6 Header Definitions
+#include <netinet/icmp6.h>          // Include for ICMPv6 Header Definitions
 #include <arpa/inet.h>              
 /************************************************/
 /*            Function Definitions              */
