@@ -111,8 +111,13 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
                 break;
             }
             case IPPROTO_UDP: {
+                // UDP Header Extraction - This Line Calculates the Position of The UDP header in The Packet Mix
+                // ip_hdr->ip_hl Indicates the Length of The IP Header in 32-bit Words, Which Is Shifted Two Bits to The Left
+                // The Result Is Added to The Pointer to The Beginning of The IP Header (ip_hdr), Which Gives a Pointer to The Beginning of The UDP Header
                 struct udphdr *udp_hdr = (struct udphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                // Prints the Source Port of the UDP Packet (Ports are Used to Address Specific Applications or Services on the Host)
                 std::cout << "src port: " << ntohs(udp_hdr->uh_sport) << std::endl;
+                // Destination Port Identifies the Application or Service on the Target Host
                 std::cout << "dst port: " << ntohs(udp_hdr->uh_dport) << std::endl;
                 break;
             }
