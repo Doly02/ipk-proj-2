@@ -105,8 +105,15 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
 
         switch (ip_hdr->ip_p) {
             case IPPROTO_TCP: {
+                // TCP Header Extraction - This line of Code Specifies the Location of The TCP Header Within the Data Packe. 
+                // The ip_hdr->ip_hl Contains the Length of The IP Header in 32-bit Words, Which is Shifted by Two Bits to Convert it to a Byte Count 
+                // The Resulting IP Header Pointer (ip_hdr) Provides a Pointer to The Beginning of The TCP Header
                 struct tcphdr *tcp_hdr = (struct tcphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                
+                // Prints the Source Port That Identifies the Application on the Sending Host. Ports Allow Multiplexing of TCP Communication on a Single Host
                 std::cout << "src port: " << ntohs(tcp_hdr->th_sport) << std::endl;
+                
+                // Prints the Destination Port, Which Identifies the Target Application on the Receiving Host. 
                 std::cout << "dst port: " << ntohs(tcp_hdr->th_dport) << std::endl;
                 break;
             }
@@ -115,8 +122,10 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
                 // ip_hdr->ip_hl Indicates the Length of The IP Header in 32-bit Words, Which Is Shifted Two Bits to The Left
                 // The Result Is Added to The Pointer to The Beginning of The IP Header (ip_hdr), Which Gives a Pointer to The Beginning of The UDP Header
                 struct udphdr *udp_hdr = (struct udphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                
                 // Prints the Source Port of the UDP Packet (Ports are Used to Address Specific Applications or Services on the Host)
                 std::cout << "src port: " << ntohs(udp_hdr->uh_sport) << std::endl;
+                
                 // Destination Port Identifies the Application or Service on the Target Host
                 std::cout << "dst port: " << ntohs(udp_hdr->uh_dport) << std::endl;
                 break;
@@ -124,8 +133,10 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
             case IPPROTO_ICMP: {
                 // ICMP Header Extraction
                 struct icmphdr *icmp_hdr = (struct icmphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                
                 // Type of ICMP Message (e.g. Echo Request [8], Echo Reply [0], Destination Unreachable [3],.. -> Identifies What Message Signalizes)
                 std::cout << "ICMP type: " << static_cast<int>(icmp_hdr->type) << std::endl;
+                
                 // Information About What Caused the ICMP message - For Type 3 (Destination Unreachable), 
                 // the Code Specifies the Reason Why the Destination is Unreachable, such as 'Port Unreachable' (code 3) or 'Network Unreachable' (code 0)
                 std::cout << "ICMP code: " << static_cast<int>(icmp_hdr->code) << std::endl;
@@ -134,10 +145,13 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
             case IPPROTO_IGMP: {
                 // IGMP Header (Extracts Specific Informations For IGMP Message)
                 struct igmp *igmp_hdr = (struct igmp *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                
                 // Type of Typ IGMP Message (e.g. Query, Report)
                 std::cout << "IGMP type: " << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
+                
                 // Max Response Time (Used in IGMP Query)
                 std::cout << "IGMP max resp time: " << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
+                
                 // Target Group Adress For IGMP Message
                 std::cout << "IGMP group address: " << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
                 break;                
