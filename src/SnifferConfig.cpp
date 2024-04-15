@@ -82,31 +82,31 @@ int SnifferConfig::parseArguments(int argc, char *argv[]) {
                 num = std::stoi(argv[++i]);
             }
         }
-        else if (arg == "arp") {
+        else if (arg == "--arp") {
             arp = true;
             numOfProtocols++;
         }
-        else if (arg == "icmp4") {
+        else if (arg == "--icmp4") {
             icmp4 = true;
             numOfProtocols++;
         }
-        else if (arg == "icmp6") {
+        else if (arg == "--icmp6") {
             icmp6 = true;
             numOfProtocols++;
         }
-        else if (arg == "igmp") {
+        else if (arg == "--igmp") {
             igmp = true;
             numOfProtocols++;
         }
-        else if (arg == "mld") {
+        else if (arg == "--mld") {
             mld = true;
             numOfProtocols++;
         }
-        else if (arg == "ndp") {
+        else if (arg == "--ndp") {
             ndp = true;
             numOfProtocols++;
         }
-        else if (arg == "help") {
+        else if (arg == "--help") {
             printUsage();
             exit(0);
         }
@@ -203,7 +203,6 @@ std::string SnifferConfig::generateFilter() const
                 {
                     if ((proto.name == "tcp" || proto.name == "udp") && port != -1) 
                     {
-                        printf("Port: %d\n", port);
                         if (portSource)
                             filter += "(" + proto.name + " and src port " + std::to_string(port) + ")";
                         else if (portDestination)
