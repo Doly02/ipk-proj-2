@@ -46,15 +46,42 @@ std::string format_timestamp(const struct timeval& tv) {
 
 std::string format_hex(const u_char *data, size_t length) {
     std::ostringstream stream;
-    for (size_t i = 0; i < length; i++) {
+    std::string ascii;
+    int bytes_per_line = 16;  // Standard Number of Bytes On Line
+
+    for (size_t i = 0; i < length; ++i) {
+        // On The Beggining of Every Line Print Offset 
+        if (i % bytes_per_line == 0) {
+            if (i != 0) {
+                stream << " " << ascii; // Add ASCII Representation at The End Of The Line
+                ascii.clear();
+                stream << std::endl; // New Line
+            }
+            stream << "0x" << std::setw(4) << std::setfill('0') << std::hex << i << ": ";
+        }
+
+        // Add Hexadecimal Value of The Byte
         stream << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(data[i]);
-        if ((i + 1) % 16 == 0 && i + 1 < length)
-            stream << std::endl << "0x" << std::setw(4) << std::setfill('0') << i + 1 << ": ";
-        else
-            stream << " ";
+
+        // Build ASCII Representation For Print In The End of the Line (If Char is Unpritable Print Dot)
+        ascii += std::isprint(data[i]) ? static_cast<char>(data[i]) : '.';
+
+        // Add Space Between Bytes
+        stream << " ";
     }
+
+    // Fill The Other Part of Line If Line Does Not Includes 16 Bytes
+    size_t remaining = length % bytes_per_line;
+    if (remaining != 0) {
+        // Add Pedding To Align ASCII Output
+        int padding = (bytes_per_line - remaining) * 3;
+        stream << std::string(padding, ' ');
+    }
+    stream << " " << ascii; // Add Last ASCII Line
+
     return stream.str();
 }
+
 
 void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
     struct ether_header *eth_header = (struct ether_header *)packet;
@@ -88,6 +115,6 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
                 break;
             }
         }
-        std::cout << std::endl << "0x0000: " << format_hex(packet, header->caplen) << std::endl;
+        std::cout << format_hex(packet, header->caplen) << std::endl;
     }
 }
