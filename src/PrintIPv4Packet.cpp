@@ -117,8 +117,12 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
                 break;
             }
             case IPPROTO_ICMP: {
+                // ICMP Header Extraction
                 struct icmphdr *icmp_hdr = (struct icmphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
+                // Type of ICMP Message (e.g. Echo Request [8], Echo Reply [0], Destination Unreachable [3],.. -> Identifies What Message Signalizes)
                 std::cout << "ICMP type: " << static_cast<int>(icmp_hdr->type) << std::endl;
+                // Information About What Caused the ICMP message - For Type 3 (Destination Unreachable), 
+                // the Code Specifies the Reason Why the Destination is Unreachable, such as 'Port Unreachable' (code 3) or 'Network Unreachable' (code 0)
                 std::cout << "ICMP code: " << static_cast<int>(icmp_hdr->code) << std::endl;
                 break;
             }
