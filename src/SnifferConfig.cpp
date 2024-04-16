@@ -183,7 +183,7 @@ std::string SnifferConfig::generateFilter() const
         else if (icmp4)
             filter += "icmp";
         else if (icmp6)
-            filter += "icmp6";
+            filter += "icmp6 && (ip6[40] == 128 || ip6[40] == 129)";
         else if (igmp)
             filter += "igmp";
         else if (mld)
@@ -208,6 +208,10 @@ std::string SnifferConfig::generateFilter() const
                         else if (portDestination)
                             filter += "(" + proto.name + " and dst port " + std::to_string(port) + ")";
                     }
+                    else if (proto.name == "icmp6")
+                    {
+                        filter += "(" + proto.name + " && (ip6[40] == 128 || ip6[40] == 129))";
+                    }
                     else 
                     {
                         // Nechybi tu mezery? 
@@ -223,6 +227,10 @@ std::string SnifferConfig::generateFilter() const
                             filter += " or " + proto.name + " and src port " + std::to_string(port);
                         else if (portDestination)
                             filter += " or " + proto.name + " and dst port " + std::to_string(port);
+                    }
+                    else if (proto.name == "icmp6")
+                    {
+                        filter += " or (" + proto.name + " && (ip6[40] == 128 || ip6[40] == 129))";
                     }
                     else 
                     {
