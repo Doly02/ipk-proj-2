@@ -42,16 +42,47 @@ void processIPv6Packet(const uint8_t *packet) {
     int next_header = ip6_hdr->ip6_nxt;
     switch (next_header) {
         case IPPROTO_ICMPV6: {
-            struct icmp6_hdr *icmp6_hdr = (struct icmp6_hdr *)(ip6_hdr + 1);
-            // Specifies the ICMPv6 Message Type (e.g. 128] Echo Request -> echo request, used in ping, [129] Echo Reply -> echo reply, used in ping
-            // [134] Router Advertisement, [135] Neighbor Solicitation, [136] Neighbor Advertisement)
-            std::cout << "ICMPv6 type: " << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
-            // Provides Additional Context or Specification for the ICMPv6 Message Type
-            // The Code Specifies the Reason or Manner in Which the Message was Generated, Depending on the Message Type
-            // (e.g. For Type [1] -> Different Codes Can Indicate Different Reasons Why the Destination is Unreachable, Such as:
-            // Code 0: no Route to the Destination, Code 1: Communication With the Destination Administratively )
-            std::cout << "ICMPv6 code: " << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
+            const struct icmp6_hdr *icmp6_hdr = findICMPv6Header(reinterpret_cast<const struct ip6_hdr *>(packet + sizeof(struct ether_header)));
+            if (icmp6_hdr)
+            {
+                // Specifies the ICMPv6 Message Type (e.g. 128] Echo Request -> echo request, used in ping, [129] Echo Reply -> echo reply, used in ping
+                // [134] Router Advertisement, [135] Neighbor Solicitation, [136] Neighbor Advertisement)
+                std::cout << "ICMPv6 type: " << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
+                // Provides Additional Context or Specification for the ICMPv6 Message Type
+                // The Code Specifies the Reason or Manner in Which the Message was Generated, Depending on the Message Type
+                // (e.g. For Type [1] -> Different Codes Can Indicate Different Reasons Why the Destination is Unreachable, Such as:
+                // Code 0: no Route to the Destination, Code 1: Communication With the Destination Administratively )
+                std::cout << "ICMPv6 code: " << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
+
+            }
             break;
         }
     }
+}
+
+const struct icmp6_hdr* findICMPv6Header(const struct ip6_hdr *ip6_hdr) {
+    int next_header = ip6_hdr->ip6_nxt;
+    const uint8_t *next_hdr_ptr = reinterpret_cast<const uint8_t*>(ip6_hdr + 1);
+    
+    // Continue While ICMPv6 Header Is Not Found (Or It's Not The End of The Headers)
+    while (true) {
+       
+        if (next_header == IPPROTO_ICMPV6) {
+            // Return Pointer To The ICMPv6 Header
+            return reinterpret_cast<const struct icmp6_hdr*>(next_hdr_ptr);
+        }
+        // Check If Header Is Not Extension Header
+        if (next_header == IPPROTO_NONE || next_header == IPPROTO_FRAGMENT) {
+            // End of Header or Fragment
+            return nullptr;
+        }
+        // Load Next Header
+        next_header = *next_hdr_ptr;
+        unsigned int hdr_extension_length = static_cast<unsigned int>(*(next_hdr_ptr + 1));
+
+        // Move Pointer to Next Header in String
+        next_hdr_ptr += (hdr_extension_length + 1) * 8;
+    }
+    // Just Preventing Compiler Warning -> Should Not Be Reached
+    return nullptr;
 }
