@@ -39,7 +39,7 @@ class IPv4PacketSniffer {
 
         void setupDevice();
         void applyFilter();
-
+        void processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header);
     public:
         IPv4PacketSniffer(const std::string& interfaceName, const std::string& filter, int maxPackets);
         ~IPv4PacketSniffer();

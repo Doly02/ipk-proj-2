@@ -32,12 +32,12 @@ SnifferConfig::SnifferConfig()
       icmp4(false),
       icmp6(false),
       igmp(false),
-      mld(false),
       ndp(false),
       portSource(false),
       portDestination(false),
       numOfProtocols(0),
       interface(""),
+      mld(false),
       num(1)
 {}
 
@@ -187,9 +187,9 @@ std::string SnifferConfig::generateFilter() const
         else if (igmp)
             filter += "igmp";
         else if (mld)
-            filter += "mld";
+            filter += "(icmp6 and (ip6[40] == 130 or ip6[40] == 131 or ip6[40] == 132 or ip6[40] == 143))";
         else if (ndp)
-            filter += "ndp";
+            filter += "ip6 proto 58 and (icmp6[0] == 133 or icmp6[0] == 134 or icmp6[0] == 135 or icmp6[0] == 136 or icmp6[0] == 137)";
     }
     else 
     {
@@ -212,6 +212,14 @@ std::string SnifferConfig::generateFilter() const
                     {
                         filter += "(" + proto.name + " && (ip6[40] == 128 || ip6[40] == 129))";
                     }
+                    else if (proto.name == "mld")
+                    {
+                        filter += "(icmp6 and (icmp6[0] == 135 or icmp6[0] == 136))";
+                    }
+                    else if (proto.name == "ndp")
+                    {
+                        filter += "ip6 proto 58 and (icmp6[0] == 133 or icmp6[0] == 134 or icmp6[0] == 135 or icmp6[0] == 136 or icmp6[0] == 137)";
+                    }
                     else 
                     {
                         // Nechybi tu mezery? 
@@ -231,6 +239,14 @@ std::string SnifferConfig::generateFilter() const
                     else if (proto.name == "icmp6")
                     {
                         filter += " or (" + proto.name + " && (ip6[40] == 128 || ip6[40] == 129))";
+                    }
+                    else if (proto.name == "mld")
+                    {
+                        filter += " or (icmp6 && (ip6[40] == 130 || ip6[40] == 131 || ip6[40] == 132 || ip6[40] == 143))";
+                    }
+                    else if (proto.name == "ndp")
+                    {
+                        filter += " or (ip6 proto 58 and (icmp6[0] == 133 or icmp6[0] == 134 or icmp6[0] == 135 or icmp6[0] == 136 or icmp6[0] == 137))";
                     }
                     else 
                     {

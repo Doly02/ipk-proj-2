@@ -19,6 +19,7 @@
 /*                  Libraries                   */
 /************************************************/
 #include "../include/PrintIPv6Packet.hpp"
+#include "../include/macros.hpp"
 /************************************************/
 /*             Function Implementation          */
 /************************************************/
@@ -53,6 +54,9 @@ void processIPv6Packet(const uint8_t *packet) {
                 // (e.g. For Type [1] -> Different Codes Can Indicate Different Reasons Why the Destination is Unreachable, Such as:
                 // Code 0: no Route to the Destination, Code 1: Communication With the Destination Administratively )
                 std::cout << "ICMPv6 code: " << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
+                // Print MLD Type if Packet Is Subtype of MLD
+                processMLDMessage(icmp6_hdr);
+                processNDPMessage(icmp6_hdr);
 
             }
             break;
@@ -85,4 +89,55 @@ const struct icmp6_hdr* findICMPv6Header(const struct ip6_hdr *ip6_hdr) {
     }
     // Just Preventing Compiler Warning -> Should Not Be Reached
     return nullptr;
+}
+
+
+void processMLDMessage(const struct icmp6_hdr* icmp6_hdr) {
+    switch (icmp6_hdr->icmp6_type) {
+        case 130:  // MLDv1 Query
+            std::cout << "ICMPv6 Subtype: MLDv1 - Query" << std::endl;
+            break;
+        case 131:  // MLDv1 Report
+            std::cout << "ICMPv6 Subtype: MLDv1 - Report" << std::endl;
+            break;
+        case 132:  // MLDv1 Done
+            std::cout << "ICMPv6 Subtype: MLDv1 - Done" << std::endl;
+            break;
+        case 143:  // MLDv2 Report
+            std::cout << "ICMPv6 Subtype: MLDv2 - Report" << std::endl;
+            break;
+        default:
+            break;
+    }
+}
+
+void processNDPMessage(const struct icmp6_hdr *icmp6_hdr) {
+    if (!icmp6_hdr) return;  // Ensure the ICMPv6 Header is Not NULL
+
+    // Check the type of the ICMPv6 message to determine if it's an NDP message
+    switch (icmp6_hdr->icmp6_type) {
+
+        case ROUTER_SOLICITATION:   
+            std::cout << "ICMPv6 Subtype: NDP - Router Solicitation" << std::endl;
+            break;
+
+        case ROUTER_ADVERTISEMENT:   
+            std::cout << "ICMPv6 Subtype: NDP - Router Advertisement" << std::endl;
+            break;
+        
+        case NEIGHBOR_SOLICITATION:   
+            std::cout << "ICMPv6 Subtype: NDP - Neighbor Solicitation" << std::endl;
+            break;
+
+        case NEIGHBOR_ADVERTISEMENT:  
+            std::cout << "ICMPv6 Subtype: NDP - Neighbor Advertisement" << std::endl;
+            break;
+
+        case REDIRECT:  
+            std::cout << "ICMPv6 Subtype: NDP - Redirect Message" << std::endl;
+            break;
+            
+        default:
+            break;
+    }
 }

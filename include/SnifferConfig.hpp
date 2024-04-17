@@ -38,7 +38,6 @@ class SnifferConfig
         bool icmp4;                 //<! ICMPv4 Packets
         bool icmp6;                 //<! ICMPv6 Packets
         bool igmp;                  //<! IGMP Packets (Internet Group Management Protocol)
-        bool mld;                   //<! MLD Packets (Multicast Listener Discovery)
         bool ndp;                   //<! NDP Packets (Neighbor Discovery Protocol) 
         bool portSource;            //<! Capture On Source Port
         bool portDestination;       //<! Capture On Destination Port 
@@ -46,7 +45,8 @@ class SnifferConfig
         int numOfProtocols;
 
     public:
-        std::string interface;
+        std::string interface;      //<! Interface on Which Will Be Sniffed 
+        bool mld;                   //<! MLD Packets (Multicast Listener Discovery)
         int num;                    //<! Number of Packets to Capture
         struct Protocol {
             std::string name;
@@ -57,17 +57,58 @@ class SnifferConfig
         SnifferConfig(/* args */);
         ~SnifferConfig();
 
+        /**
+         * @brief Gets the Interface
+         * 
+         * @return std::string 
+         */
         std::string getInterface() const { return interface; }
+        /**
+         * @brief Gets the Port
+         * 
+         * @return int 
+         */
         int getPort() const { return port; }
+        /**
+         * @brief Checks If TCP Is Active
+         * 
+         * @return true If TCP Is Active Otherwise False
+         */
         bool isTcp() const { return tcp; }
+        
+        /**
+         * @brief Checks If UDP Is Active
+         * 
+         * @return true If UDP Is Active Otherwise False
+         */
         bool isUdp() const { return udp; }
 
+        /**
+         * @brief Parse The Program's Arguments
+         * 
+         * @param argc  Count of The Arguments
+         * @param argv  Values Of The Argument
+         * @return int  Returns CORRECT Parsing Was Proceedd Correctly (Special Case 'JUST_INTERFACE' - If Only Argument Was '-i'/'--interface' To
+         *              Show Avalaible Interfaces To The User).
+         */
         int parseArguments(int argc, char *argv[]);
 
+        /**
+         * @brief Prints Program Usage To STDOUT.
+         * 
+         */
         void printUsage();
 
+        /**
+         * @brief Generates Filter for 'lib pcap', Dependent on Chosen Program Args.
+         * 
+         * @return std::string 
+         */
         std::string generateFilter() const;
 };
 
 
 #endif // SNIFFERCONFIG_HPP
+
+
+

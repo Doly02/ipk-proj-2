@@ -86,6 +86,7 @@ std::string format_hex(const u_char *data, size_t length) {
 
 void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
     struct ether_header *eth_header = (struct ether_header *)packet;
+    std::cout << "=========================================================================" << std::endl;
     std::cout << "timestamp: " << format_timestamp(header->ts) << std::endl;
     std::cout << "src MAC: " << format_mac(eth_header->ether_shost) << std::endl;
     std::cout << "dst MAC: " << format_mac(eth_header->ether_dhost) << std::endl;
@@ -161,7 +162,6 @@ void print_packet(const u_char *packet, const struct pcap_pkthdr *header) {
         std::cout << format_hex(packet, header->caplen) << std::endl;
     }
     else if (ntohs(eth_header->ether_type)  == ETHERTYPE_IPV6) { /* IPv6 Packets */
-        printf("Packet is IPv6\n");
         processIPv6Packet(packet);
         std::cout << format_hex(packet, header->caplen) << std::endl;
     }

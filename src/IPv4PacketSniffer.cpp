@@ -38,7 +38,6 @@ IPv4PacketSniffer::IPv4PacketSniffer(const std::string& interfaceName, const std
         deviceHandle(nullptr) {
         setupDevice(); // Setup device
 }
-
 /**
  * @brief Destruct a new IPv4PacketSniffer::IPv4PacketSniffer object
  * 
@@ -49,12 +48,30 @@ IPv4PacketSniffer::~IPv4PacketSniffer() {
     }
 }
 
+
+void IPv4PacketSniffer::processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header) {
+    //const struct ip6_hdr *ip6 = (struct ip6_hdr *)(packet + sizeof(struct ether_header));
+    const struct icmp6_hdr *icmp6 = (struct icmp6_hdr *)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
+    printf("ICMP6 type: %d\n", icmp6->icmp6_type);
+    if (icmp6->icmp6_type == 130 || icmp6->icmp6_type == 131 || icmp6->icmp6_type == 132 || icmp6->icmp6_type == 143) {
+        std::cout << "MLD message detected, type: " << static_cast<int>(icmp6->icmp6_type) << std::endl;
+        //actNumMldPackets++;
+        //if (actNumMldPackets >= maxPackets) {
+        //    pcap_breakloop(deviceHandle);
+        //}
+    }
+    else if (header)
+        return;
+}
+
+
 /**
  * @brief Setups the device for capturing packets
  * 
 */
 void IPv4PacketSniffer::setupDevice() {
     // Open Device for Packet Capture With Set Buffer Size And With TimeOut
+    printf("Interface: %s\n", interfaceName.c_str());
     deviceHandle = pcap_open_live(interfaceName.c_str(), BUFSIZ, 1, 1000, errbuf);
     if (deviceHandle == nullptr) {
         throw std::runtime_error("pcap_open_live failed: " + std::string(errbuf));  // If Fails Throw Exception
