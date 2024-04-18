@@ -23,7 +23,7 @@ HEADERS = include/SnifferConfig.hpp include/NetworkInterfacePrinter.hpp include/
 LIBS = -lpcap
 
 # Source Files
-SOURCES = src/SnifferConfig.cpp src/NetworkInterfacePrinter.cpp src/Sniffer.cpp src/main.cpp
+SOURCES = src/SnifferConfig.cpp src/NetworkInterfacePrinter.cpp src/PrintIPv4Packet.cpp src/PrintIPv6Packet.cpp src/Sniffer.cpp src/main.cpp
 # Object Files 
 OBJECTS = $(SOURCES:.cpp=.o)
 
