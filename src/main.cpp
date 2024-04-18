@@ -21,7 +21,7 @@
 #include "../include/SnifferConfig.hpp"
 #include "../include/macros.hpp"
 #include "../include/NetworkInterfacePrinter.hpp"
-#include "../include/IPv4PacketSniffer.hpp"
+#include "../include/Sniffer.hpp"
 /************************************************/
 /*                   Main                       */
 /************************************************/
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     std::string filter = config.generateFilter();
     try {
-        IPv4PacketSniffer sniffer(config.interface.c_str(), filter, config.num);
+        Sniffer sniffer(config.interface.c_str(), filter, config.num);
         sniffer.startCapture();
     }
     catch (const std::exception& e) {
