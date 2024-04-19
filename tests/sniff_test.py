@@ -30,7 +30,7 @@ def get_interface_ipv6_address(interface):
 
 
 # MLD Packets 
-def send_mld_130():
+def prep_mld_130():
     """ 
     Prepaires MLDv2 Query packet
     """
@@ -40,7 +40,7 @@ def send_mld_130():
     mld = ICMPv6MLQuery()
     return ip/mld
 
-def send_mld_131():
+def prep_mld_131():
     """ 
     Prepaires MLDv2 Report packet
     """
@@ -50,7 +50,7 @@ def send_mld_131():
     mld = ICMPv6MLReport()
     return ip/mld
 
-def send_mld_132():
+def prep_mld_132():
     """
     Prepaires MLDv2 Done packet
     """
@@ -61,7 +61,7 @@ def send_mld_132():
     mld = ICMPv6MLDone()                            # Create MLD Done message
     return ip/mld                                   # Assembly packet
 
-def send_mld_143():
+def prep_mld_143():
     """
     Prepaires MLDv2 Report packet
     """
@@ -78,7 +78,7 @@ def send_mld_143():
     return ip/mld               # Return Assembled Packet
 
 
-def send_ndp_rs():
+def prep_ndp_rs():
     """
     Prepaires ICMPv6 Router Solicitation packet
     """
@@ -92,7 +92,7 @@ def send_ndp_rs():
     lladdr = ICMPv6NDOptSrcLLAddr(lladdr='00:1c:23:12:34:56') 
     return ip/rs/lladdr
 
-def send_ndp_ns():
+def prep_ndp_ns():
     """
     Prepaires ICMPv6 Neighbor Solicitation packet
     """
@@ -108,7 +108,7 @@ def send_ndp_ns():
     lladdr = ICMPv6NDOptSrcLLAddr(lladdr='00:1c:23:12:34:56')
     return ip/ns/lladdr
 
-def send_ndp_ra():
+def prep_ndp_ra():
     """
     Prepaires ICMPv6 Router Advertisement packet
     """
@@ -121,7 +121,7 @@ def send_ndp_ra():
     prefix_info = ICMPv6NDOptPrefixInfo(prefix='2001:db8:85a3::', prefixlen=64, L=1, A=1, validlifetime=86400, preferredlifetime=43200)
     return ip/ra/lladdr/mtu/prefix_info
 
-def send_ndp_na_broadcast():
+def prep_ndp_na_broadcast():
     src_address = '2001:db8:1:2::1'  
     dst_address = 'ff02::1'          
     ip = IPv6(src=src_address, dst=dst_address)
@@ -134,36 +134,30 @@ def send_ndp_na_broadcast():
 def send_packet(packet_type):
 
     if packet_type == 143:
-        packet = send_mld_143()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_mld_143()
     
     elif packet_type == 130:
-        packet = send_mld_130()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_mld_130()
 
     elif packet_type == 131:
-        packet = send_mld_131()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_mld_131()
 
     elif packet_type == 132:
-        packet = send_mld_132()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_mld_132()
 
     elif packet_type == 'NDP_RS':
-        packet = send_ndp_rs()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_ndp_rs()
 
     elif packet_type == 'NDP_NS':
-        packet = send_ndp_ns()
-        send(packet,verbose=False)  # Send packet
+        packet = prep_ndp_ns()
     
     elif packet_type == 'NDP_RA':
-        packet = send_ndp_ra()
-        send(packet, verbose=False)
-
+        packet = prep_ndp_ra()
+    
     elif packet_type == 'NDP_NA':
-        packet = send_ndp_na_broadcast()
-        send(packet, verbose=False)
+        packet = prep_ndp_na_broadcast()
+    
+    send(packet, verbose=False)
 
 def run_sniffer(output_queue,packet_type):
     if packet_type in [143,130,131,132]:
