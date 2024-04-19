@@ -57,9 +57,9 @@ def send_mld_132():
     # Create IPv6 Header
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
-    ip = IPv6(src=src_address, dst=dst_address)  # FF02::1 Address For All Nodes On Local Segment
-    mld = ICMPv6MLDone() # Create MLD Done message
-    return ip/mld # Assembly packet
+    ip = IPv6(src=src_address, dst=dst_address)     # FF02::1 Address For All Nodes On Local Segment
+    mld = ICMPv6MLDone()                            # Create MLD Done message
+    return ip/mld                                   # Assembly packet
 
 def send_mld_143():
     """
@@ -112,8 +112,8 @@ def send_ndp_ra():
     """
     Prepaires ICMPv6 Router Advertisement packet
     """
-    src_address = '2001:db8:85a3::1'  # Adresa routeru
-    dst_address = 'ff02::1'  # Všechny zařízení na lokálním linku
+    src_address = '2001:db8:85a3::1'    
+    dst_address = 'ff02::1'             # Address of All Routers on the Local Link
     ip = IPv6(src=src_address, dst=dst_address)
     ra = ICMPv6ND_RA()
     lladdr = ICMPv6NDOptSrcLLAddr(lladdr='00:1c:23:12:34:56')
@@ -122,10 +122,10 @@ def send_ndp_ra():
     return ip/ra/lladdr/mtu/prefix_info
 
 def send_ndp_na_broadcast():
-    src_address = '2001:db8:1:2::1'  # Zdrojová adresa
-    dst_address = 'ff02::1'          # Cílová adresa
+    src_address = '2001:db8:1:2::1'  
+    dst_address = 'ff02::1'          
     ip = IPv6(src=src_address, dst=dst_address)
-    icmp = ICMPv6ND_RA()
+    icmp = ICMPv6ND_NA()
     packet = ip/icmp
     return packet
 
@@ -173,7 +173,7 @@ def run_sniffer(output_queue,packet_type):
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
         for line in process.stdout:
-            output_queue.put(line)  # Put every line of output in queue
+            output_queue.put(line)  # Put All Lines of Output in Queue
 
 
 def check_packet(output,packet_type=143):
@@ -198,8 +198,24 @@ def check_packet(output,packet_type=143):
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "132"
 
+    elif packet_type == 'NDP_RS':
+        expected_src_ip = "2001:db8:85a3::1"
+        expected_dst_ip = "ff02::2"
+        expected_icmpv6_type = "133"  # ICMPv6 type for Router Solicitation
+    elif packet_type == 'NDP_NS':
+        expected_src_ip = "2001:db8:85a3::1"
+        expected_dst_ip = "ff02::1:ff00:0002"
+        expected_icmpv6_type = "135"  # ICMPv6 type for Neighbor Solicitation
+    elif packet_type == 'NDP_RA':
+        expected_src_ip = "2001:db8:85a3::1"
+        expected_dst_ip = "ff02::1"
+        expected_icmpv6_type = "134"  # ICMPv6 type for Router Advertisement
+    elif packet_type == 'NDP_NA':
+        expected_src_ip = "2001:db8:1:2::1"
+        expected_dst_ip = "ff02::1"
+        expected_icmpv6_type = "136"  # ICMPv6 type for Neighbor Advertisement
 
-    # Regex to capture necessary parts of the packet
+    # Regex to Capture Necessary Parts of the Packet
     src_ip_match = re.search(r"src IP: (\S+)", output)
     dst_ip_match = re.search(r"dst IP: (\S+)", output)
     icmpv6_type_match = re.search(r"ICMPv6 type: (\d+)", output)
@@ -209,11 +225,18 @@ def check_packet(output,packet_type=143):
         dst_ip = dst_ip_match.group(1)
         icmpv6_type = icmpv6_type_match.group(1)
 
-        # Compare against expected values
+        # Compare Against Expected Values
         if (packet_type in [143, 130, 131, 132] and src_ip == expected_src_ip and dst_ip == expected_dst_ip and
             icmpv6_type == expected_icmpv6_type):
+            print(f"Packet Fully Matched {packet_type}")
             return True
+        
         elif (packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA'] and icmpv6_type in ['133','135','134','136','137']):
+            
+            if icmpv6_type == expected_icmpv6_type:
+                print(f"Packet Fully Matched {packet_type}")
+            else:
+                print(f"Packet Not Matched (Catched: {icmpv6_type})")
             return True
     return False
 
