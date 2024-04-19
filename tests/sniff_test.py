@@ -1,6 +1,7 @@
 import threading
 from scapy.all import send, IPv6, ICMPv6MLReport2,ICMPv6MLQuery,ICMPv6MLReport,ICMPv6MLDone
 from scapy.all import ICMPv6ND_RS, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA, ICMPv6ND_Redirect, ICMPv6NDOptSrcLLAddr
+from scapy.all import ICMPv6NDOptMTU, ICMPv6NDOptPrefixInfo,ICMPv6NDOptDstLLAddr
 import netifaces as ni # To get the interface IP address
 from colorama import init, Fore
 import subprocess
@@ -30,6 +31,9 @@ def get_interface_ipv6_address(interface):
 
 # MLD Packets 
 def send_mld_130():
+    """ 
+    Prepaires MLDv2 Query packet
+    """
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
     ip = IPv6(src=src_address, dst=dst_address)  # FF02::1 je adresa pro všechny uzly na lokálním segmentu
@@ -37,6 +41,9 @@ def send_mld_130():
     return ip/mld
 
 def send_mld_131():
+    """ 
+    Prepaires MLDv2 Report packet
+    """
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
     ip = IPv6(src=src_address, dst=dst_address)  # FF02::1 Address For All Nodes On Local Segment
@@ -44,6 +51,9 @@ def send_mld_131():
     return ip/mld
 
 def send_mld_132():
+    """
+    Prepaires MLDv2 Done packet
+    """
     # Create IPv6 Header
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
@@ -52,6 +62,9 @@ def send_mld_132():
     return ip/mld # Assembly packet
 
 def send_mld_143():
+    """
+    Prepaires MLDv2 Report packet
+    """
     # Create IPv6 Header
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::16'    # Address for all MLDv2-capable routers
@@ -66,6 +79,9 @@ def send_mld_143():
 
 
 def send_ndp_rs():
+    """
+    Prepaires ICMPv6 Router Solicitation packet
+    """
     # The Source Address Associated With the Interface
     src_address = '2001:db8:85a3::1' 
     # Destination Address In Network (Address of All Routers on the Local Link)
@@ -77,6 +93,9 @@ def send_ndp_rs():
     return ip/rs/lladdr
 
 def send_ndp_ns():
+    """
+    Prepaires ICMPv6 Neighbor Solicitation packet
+    """
     # The Source Address Associated With the Interface
     src_address = '2001:db8:85a3::1'
     # Target Address In Network
@@ -89,9 +108,28 @@ def send_ndp_ns():
     lladdr = ICMPv6NDOptSrcLLAddr(lladdr='00:1c:23:12:34:56')
     return ip/ns/lladdr
 
+def send_ndp_ra():
+    """
+    Prepaires ICMPv6 Router Advertisement packet
+    """
+    src_address = '2001:db8:85a3::1'  # Adresa routeru
+    dst_address = 'ff02::1'  # Všechny zařízení na lokálním linku
+    ip = IPv6(src=src_address, dst=dst_address)
+    ra = ICMPv6ND_RA()
+    lladdr = ICMPv6NDOptSrcLLAddr(lladdr='00:1c:23:12:34:56')
+    mtu = ICMPv6NDOptMTU(mtu=1500)
+    prefix_info = ICMPv6NDOptPrefixInfo(prefix='2001:db8:85a3::', prefixlen=64, L=1, A=1, validlifetime=86400, preferredlifetime=43200)
+    return ip/ra/lladdr/mtu/prefix_info
 
+def send_ndp_na_broadcast():
+    src_address = '2001:db8:1:2::1'  # Zdrojová adresa
+    dst_address = 'ff02::1'          # Cílová adresa
+    ip = IPv6(src=src_address, dst=dst_address)
+    icmp = ICMPv6ND_RA()
+    packet = ip/icmp
+    return packet
 
-
+    # Manually Add MAC Address To Neighbor Cache: sudo ip -6 neigh add 2001:db8:85a3::1 lladdr 00:1c:23:12:34:56 dev wlp4s0
 
 def send_packet(packet_type):
 
@@ -118,11 +156,19 @@ def send_packet(packet_type):
     elif packet_type == 'NDP_NS':
         packet = send_ndp_ns()
         send(packet,verbose=False)  # Send packet
+    
+    elif packet_type == 'NDP_RA':
+        packet = send_ndp_ra()
+        send(packet, verbose=False)
+
+    elif packet_type == 'NDP_NA':
+        packet = send_ndp_na_broadcast()
+        send(packet, verbose=False)
 
 def run_sniffer(output_queue,packet_type):
     if packet_type in [143,130,131,132]:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--mld"]
-    elif packet_type in ['NDP_RS','NDP_NS']:
+    elif packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--ndp"]
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
@@ -167,14 +213,14 @@ def check_packet(output,packet_type=143):
         if (packet_type in [143, 130, 131, 132] and src_ip == expected_src_ip and dst_ip == expected_dst_ip and
             icmpv6_type == expected_icmpv6_type):
             return True
-        elif (packet_type in ['NDP_RS','NDP_NS'] and icmpv6_type in ['133','135','134','136','137']):
+        elif (packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA'] and icmpv6_type in ['133','135','134','136','137']):
             return True
     return False
 
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS']
+    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA']
     interface = 'wlp4s0'
     test_idx = 1
 
