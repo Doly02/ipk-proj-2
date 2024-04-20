@@ -131,10 +131,10 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
     // Check If Packet Is ARP
     if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
         struct ether_arp *arp_hdr = (struct ether_arp *)(packet + sizeof(struct ether_header));
-        std::cout << "Sender MAC: " << createPadding(15) << formatMac(arp_hdr->arp_sha) << std::endl;
-        std::cout << "Sender IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
-        std::cout << "Target MAC: " << formatMac(arp_hdr->arp_tha) << std::endl;
-        std::cout << "Target IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
+        std::cout << "Sender MAC: " << createPadding(14) << formatMac(arp_hdr->arp_sha) << std::endl;
+        std::cout << "Sender IP: "  << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
+        std::cout << "Target MAC: " << createPadding(14) << formatMac(arp_hdr->arp_tha) << std::endl;
+        std::cout << "Target IP: "  << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
     } 
     else if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
         struct ip *ip_hdr = (struct ip *)(packet + sizeof(struct ether_header));
@@ -171,6 +171,9 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 
                 // Destination Port Identifies the Application or Service on the Target Host
                 std::cout << "dst port: "               << createPadding(16) << ntohs(udp_hdr->uh_dport) << std::endl;
+
+                // UDP Length - The Total Length of the UDP Header and Data, Which is Important for Understanding the Size of the Data Being Transferred.
+                std::cout << "UDP length: "             << createPadding(14) << ntohs(udp_hdr->uh_ulen) << " bytes" << std::endl;
                 break;
             }
             case IPPROTO_ICMP: {
@@ -200,12 +203,13 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 break;                
             }
         }
-        std::cout << formatHex(packet, header->caplen) << std::endl;
     }
     else if (ntohs(eth_header->ether_type)  == ETHERTYPE_IPV6) { /* IPv6 Packets */
         processIPv6Packet(packet);
-        std::cout << formatHex(packet, header->caplen) << std::endl;
+
     }
+    std::cout << std::endl;
+    std::cout << formatHex(packet, header->caplen) << std::endl;
 }
 
 

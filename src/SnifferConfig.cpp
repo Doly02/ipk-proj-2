@@ -157,7 +157,6 @@ std::string SnifferConfig::generateFilter() const
     {
         if (tcp)    // Vyresit porty
         {
-            printf("DBG src: %d, dst: %d\n", portSource, portDestination);
             if (portSource && portDestination)
                 filter += "(tcp and port " + std::to_string(port)+ ")";
             else if (portSource)
@@ -203,7 +202,12 @@ std::string SnifferConfig::generateFilter() const
                 {
                     if ((proto.name == "tcp" || proto.name == "udp") && port != -1) 
                     {
-                        if (portSource)
+
+                    if (portSource && portDestination)
+                    {
+                        filter += "(" + proto.name + " and port " + std::to_string(port) + ")";
+                    }
+                    else if (portSource)
                             filter += "(" + proto.name + " and src port " + std::to_string(port) + ")";
                         else if (portDestination)
                             filter += "(" + proto.name + " and dst port " + std::to_string(port) + ")";
@@ -231,10 +235,14 @@ std::string SnifferConfig::generateFilter() const
                 {
                     if ((proto.name == "tcp" || proto.name == "udp") && port != -1) 
                     {
-                        if (portSource)
-                            filter += " or " + proto.name + " and src port " + std::to_string(port);
+                        if (portSource && portDestination)
+                        {
+                            filter += " or (" + proto.name + " and port " + std::to_string(port) + ")";
+                        }
+                        else if (portSource)
+                            filter += " or (" + proto.name + " and src port " + std::to_string(port) + ")";
                         else if (portDestination)
-                            filter += " or " + proto.name + " and dst port " + std::to_string(port);
+                            filter += " or ()" + proto.name + " and dst port " + std::to_string(port) + ")";
                     }
                     else if (proto.name == "icmp6")
                     {
