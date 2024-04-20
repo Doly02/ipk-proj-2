@@ -9,6 +9,7 @@
 # Libraries
 from scapy.all import send, IPv6, ICMPv6MLReport2,ICMPv6MLQuery,ICMPv6MLReport,ICMPv6MLDone
 from scapy.all import ICMPv6ND_RS, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA, ICMPv6ND_Redirect, ICMPv6NDOptSrcLLAddr
+from scapy.all import IPv6, ICMPv6EchoRequest, ICMPv6EchoReply
 from scapy.all import ICMPv6NDOptMTU, ICMPv6NDOptPrefixInfo,ICMPv6NDOptDstLLAddr
 from scapy.all import ARP, Ether, sendp
 from scapy.all import IP, ICMP
@@ -212,7 +213,7 @@ def prep_arp_reply():
     arp = ARP(pdst=dst_ip, psrc=src_ip, hwdst=dst_mac, hwsrc=src_mac, op="is-at")
     return ether / arp
 
-def prep_icmp_echo_request():
+def prep_icmp4_echo_request():
     """
     Prepaires ICMPv4 Echo Request Packet.
     """
@@ -223,7 +224,7 @@ def prep_icmp_echo_request():
     packet = ip / icmp / data
     return packet
 
-def prep_icmp_echo_reply():
+def prep_icmp4_echo_reply():
     """
     Prepaires ICMPv4 Echo Reply Packet.
     """
@@ -233,4 +234,22 @@ def prep_icmp_echo_reply():
     icmp = ICMP(type=0, code=0, id=1, seq=1)    # Echo Reply (Type 0)
     data = 'Reply'                              # Payload
     packet = ip / icmp / data
+    return packet
+
+def prep_icmpv6_echo_request():
+    """
+    Prepare an ICMPv6 Echo Request Packet.
+    """
+    src_ip = '2001:db8::1'
+    dst_ip = 'ff02::1'
+    packet = IPv6(src=src_ip, dst=dst_ip) / ICMPv6EchoRequest(data="Hello")
+    return packet
+
+def prep_icmpv6_echo_reply():
+    """
+    Prepare an ICMPv6 Echo Reply Packet.
+    """
+    src_ip = '2001:db8::1'
+    dst_ip = 'ff02::1'
+    packet = IPv6(src=src_ip, dst=dst_ip) / ICMPv6EchoReply(data="Reply")
     return packet

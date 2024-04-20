@@ -4,6 +4,16 @@
 
 # Executable Program
 ipk-sniffer
+
+# Personal
+note.txt
+
+# Tests
+tests/__pycache__
+tests/myenv
+
+
+
 # Visual Studio Code Settings
 .vscode
 # Compiled Object files
