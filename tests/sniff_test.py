@@ -1,24 +1,27 @@
+#
+#   Project: IPK Project 2 - Packet Sniffer
+#   Author:  Tomas Dolak
+#   File:    sniff_test.py
+#   Description: This Script is Used to Test the Packet Sniffer. Script First Runs the Sniffer And Then Sends a Packet of a Specific Type That Should Be Sniffed. 
+#   The Captured Packet is Evaluated Against the Expected Values.
+#
+
+# Libraries
 import threading
 from scapy.all import send, sendp
 from prep_packet import *
-
-import netifaces as ni # To get the interface IP address
 from colorama import init, Fore
 import subprocess
 import time
 import re
 
-
-# Create Virtual Interface For Testing Packets: 
-# sudo ip link add name virt0 type dummy
-# sudo ip addr add 192.0.2.1/24 dev virt0
-# sudo ip link set virt0 up
-
 # Inicialization Colorama
 init(autoreset=True)
 
-
 def send_packet(packet_type):
+    """
+    Send Packet of Specific Type to the Network.
+    """
 
     if packet_type == 'MLD2_REP':
         packet = prep_mld2_report()
@@ -81,6 +84,9 @@ def send_packet(packet_type):
         send(packet, verbose=False)
 
 def run_sniffer(output_queue,packet_type):
+    """
+    Runs Sniffer to Capture Packets of Specific Type.
+    """
     if packet_type in ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--mld"]
     elif packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA']:
@@ -98,8 +104,13 @@ def run_sniffer(output_queue,packet_type):
             output_queue.put(line)  # Put All Lines of Output in Queue
 
 
-def check_packet(output,packet_type=143):
-
+def check_packet(output,packet_type=None):
+    """
+    Checks Captured Packet Against Expected Values.
+    """
+    if packet_type == None:
+        return False
+    
     if packet_type == 'MLD2_REP':
         expected_src_ip = "2001:db8:85a3::8a2e:370:7334"
         expected_dst_ip = "ff02::16"
@@ -246,11 +257,11 @@ def check_packet(output,packet_type=143):
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON',
-                    'NDP_RS','NDP_NS','NDP_RA','NDP_NA',
-                    'IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE',
-                    'ARP_REQUEST','ARP_REPLY',
-                    'ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']
+    packet_types = ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON',         # MLDv1 and MLDv2
+                    'NDP_RS','NDP_NS','NDP_RA','NDP_NA',                    # NDP
+                    'IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE',                # IGMP
+                    'ARP_REQUEST','ARP_REPLY',                              # ARP
+                    'ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']                  # ICMPv4
     interface = 'wlp4s0'
     test_idx = 1
 

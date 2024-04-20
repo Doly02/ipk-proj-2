@@ -1,4 +1,12 @@
-import threading
+#
+#   Project: IPK Project 2 - Packet Sniffer
+#   Author:  Tomas Dolak
+#   File:    prep_packet.py
+#   Description: This File Contains Functions for Preparing Packets for Testing. 
+#   
+
+
+# Libraries
 from scapy.all import send, IPv6, ICMPv6MLReport2,ICMPv6MLQuery,ICMPv6MLReport,ICMPv6MLDone
 from scapy.all import ICMPv6ND_RS, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA, ICMPv6ND_Redirect, ICMPv6NDOptSrcLLAddr
 from scapy.all import ICMPv6NDOptMTU, ICMPv6NDOptPrefixInfo,ICMPv6NDOptDstLLAddr
@@ -9,6 +17,9 @@ import socket
 import struct
 
 def get_interface_ipv6_address(interface):
+    """
+    Returns IPv6 Address of the Interface.
+    """
     try:
         ipv6_addr = ni.ifaddresses(interface)[ni.AF_INET6][0]['addr']
         return ipv6_addr
