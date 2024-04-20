@@ -216,7 +216,28 @@ def prep_arp_reply():
     arp = ARP(pdst=dst_ip, psrc=src_ip, hwdst=dst_mac, hwsrc=src_mac, op="is-at")
     return ether / arp
 
+def prep_icmp_echo_request():
+    """
+    Prepaires ICMPv4 Echo Request Packet.
+    """
+    dst_ip = '192.168.1.1'  
+    ip = IP(dst=dst_ip)
+    icmp = ICMP(type=8, code=0)                 # Echo Request (Type 8)
+    data = 'Hello'                              # Payload
+    packet = ip / icmp / data
+    return packet
 
+def prep_icmp_echo_reply():
+    """
+    Prepaires ICMPv4 Echo Reply Packet.
+    """
+    src_ip = '192.168.1.2'  
+    dst_ip = '192.168.1.1'  
+    ip = IP(src=src_ip, dst=dst_ip)
+    icmp = ICMP(type=0, code=0, id=1, seq=1)    # Echo Reply (Type 0)
+    data = 'Reply'                              # Payload
+    packet = ip / icmp / data
+    return packet
 
 
 def send_packet(packet_type):
@@ -274,6 +295,14 @@ def send_packet(packet_type):
         packet = prep_arp_reply()
         sendp(packet, verbose=False)  # Send on Link Layer
 
+    elif packet_type == 'ICMP_ECHO_REQUEST':
+        packet = prep_icmp_echo_request()
+        send(packet, verbose=False)
+
+    elif packet_type == 'ICMP_ECHO_REPLY':
+        packet = prep_icmp_echo_reply()
+        send(packet, verbose=False)
+
 def run_sniffer(output_queue,packet_type):
     if packet_type in [143,130,131,132]:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--mld"]
@@ -283,6 +312,9 @@ def run_sniffer(output_queue,packet_type):
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--igmp"]
     elif packet_type in ['ARP_REQUEST','ARP_REPLY']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--arp"]
+    elif packet_type in ['ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']:
+        command = [".././ipk-sniffer", "-i", "wlp4s0", "--icmp4"]
+
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
         for line in process.stdout:
@@ -355,6 +387,14 @@ def check_packet(output,packet_type=143):
         expected_target_mac = "aa:bb:cc:dd:ee:ff"
         expected_target_ip = "192.168.1.10"
 
+    elif packet_type == 'ICMP_ECHO_REQUEST':
+        expected_icmpv4_type = "8"
+        expected_icmpv4_code = "0"
+
+    elif packet_type == 'ICMP_ECHO_REPLY':
+        expected_icmpv4_type = "0"
+        expected_icmpv4_code = "0"
+
     # Regex to Capture Necessary Parts of the Packet
     src_ip_match = re.search(r"src IP: (\S+)", output)
     dst_ip_match = re.search(r"dst IP: (\S+)", output)
@@ -363,6 +403,8 @@ def check_packet(output,packet_type=143):
     target_mac_match = re.search(r"Target MAC: (\S+)", output)
     sender_ip_match = re.search(r"Sender IP: (\S+)", output)
     target_ip_match = re.search(r"Target IP: (\S+)", output)
+    icmpv4_type_match = re.search(r"ICMP type: (\d+)", output)
+    icmpv4_code_match = re.search(r"ICMP code: (\d+)", output)
 
     if src_ip_match and dst_ip_match and icmpv6_type_match:
         src_ip = src_ip_match.group(1)
@@ -411,6 +453,13 @@ def check_packet(output,packet_type=143):
                     # Not Matched
                     print(Fore.YELLOW,"NOTE: Necessary packet details not found in output.")
                     return False
+                
+        elif packet_type in ['ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']:
+            icmpv4_type = icmpv4_type_match.group(1)
+            icmpv4_code = icmpv4_code_match.group(1)
+            if icmpv4_type == expected_icmpv4_type and icmpv4_code == expected_icmpv4_code:
+                print(f"Packet Fully Matched {packet_type}")
+                return True
         else:
             print(output)
 
@@ -420,7 +469,7 @@ def check_packet(output,packet_type=143):
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE','ARP_REQUEST','ARP_REPLY']
+    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE','ARP_REQUEST','ARP_REPLY','ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']
     interface = 'wlp4s0'
     test_idx = 1
 
