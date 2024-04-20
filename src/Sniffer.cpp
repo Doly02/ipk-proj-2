@@ -25,6 +25,7 @@
 /*               Class Methods                  */
 /************************************************/
 
+
 /**
  * @brief Construct a new IPv4PacketSniffer::IPv4PacketSniffer object
  * 
@@ -49,6 +50,9 @@ Sniffer::~Sniffer() {
     }
 }
 
+std::string Sniffer::createPadding(int size) {
+    return std::string(size, ' ');  // Vrátí řetězec o dané délce vyplněný mezerami
+}
 
 void Sniffer::processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header) {
     //const struct ip6_hdr *ip6 = (struct ip6_hdr *)(packet + sizeof(struct ether_header));
@@ -119,23 +123,24 @@ void Sniffer::startCapture() {
 void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header) {
     struct ether_header *eth_header = (struct ether_header *)packet;
     std::cout << "=========================================================================" << std::endl;
-    std::cout << "timestamp: " << formatTimestamp(header->ts) << std::endl;
-    std::cout << "src MAC: " << formatMac(eth_header->ether_shost) << std::endl;
-    std::cout << "dst MAC: " << formatMac(eth_header->ether_dhost) << std::endl;
-    std::cout << "frame length: " << header->len << " bytes" << std::endl;
+    std::cout << "timestamp: "      << createPadding(15) << formatTimestamp(header->ts) << std::endl;
+    std::cout << "src MAC: "        << createPadding(17) << formatMac(eth_header->ether_shost) << std::endl;
+    std::cout << "dst MAC: "        << createPadding(17) << formatMac(eth_header->ether_dhost) << std::endl;
+    std::cout << "frame length: "   << createPadding(12) << header->len << " bytes" << std::endl;
 
     // Check If Packet Is ARP
     if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
         struct ether_arp *arp_hdr = (struct ether_arp *)(packet + sizeof(struct ether_header));
-        std::cout << "Sender MAC: " << formatMac(arp_hdr->arp_sha) << std::endl;
+        std::cout << "Sender MAC: " << createPadding(15) << formatMac(arp_hdr->arp_sha) << std::endl;
         std::cout << "Sender IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
         std::cout << "Target MAC: " << formatMac(arp_hdr->arp_tha) << std::endl;
         std::cout << "Target IP: " << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
     } 
     else if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
         struct ip *ip_hdr = (struct ip *)(packet + sizeof(struct ether_header));
-        std::cout << "src IP: " << formatIp(ip_hdr->ip_src) << std::endl;
-        std::cout << "dst IP: " << formatIp(ip_hdr->ip_dst) << std::endl;
+        std::cout << "src IP: " << createPadding(18) << formatIp(ip_hdr->ip_src) << std::endl;
+        std::cout << "dst IP: " << createPadding(18) << formatIp(ip_hdr->ip_dst) << std::endl;
+        std::cout << "TTL: "    << createPadding(21) << static_cast<int>(ip_hdr->ip_ttl) << std::endl;
 
         switch (ip_hdr->ip_p) {
             case IPPROTO_TCP: {
@@ -145,10 +150,14 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct tcphdr *tcp_hdr = (struct tcphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Prints the Source Port That Identifies the Application on the Sending Host. Ports Allow Multiplexing of TCP Communication on a Single Host
-                std::cout << "src port: " << ntohs(tcp_hdr->th_sport) << std::endl;
+                std::cout << "src port: "               << createPadding(16) << ntohs(tcp_hdr->th_sport) << std::endl;
                 
                 // Prints the Destination Port, Which Identifies the Target Application on the Receiving Host. 
-                std::cout << "dst port: " << ntohs(tcp_hdr->th_dport) << std::endl;
+                std::cout << "dst port: "               << createPadding(16) << ntohs(tcp_hdr->th_dport) << std::endl;
+                std::cout << "Sequence Number: "        << createPadding(9) << ntohl(tcp_hdr->th_seq) << std::endl;
+                std::cout << "Acknowledgment Number: "  << createPadding(3) << ntohl(tcp_hdr->th_ack) << std::endl;
+                std::cout << "Flags: "                  << createPadding(19) << std::bitset<8>(tcp_hdr->th_flags) << std::endl;
+                std::cout << "Window Size: "            << createPadding(13) << ntohs(tcp_hdr->th_win) << std::endl;
                 break;
             }
             case IPPROTO_UDP: {
@@ -158,10 +167,10 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct udphdr *udp_hdr = (struct udphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Prints the Source Port of the UDP Packet (Ports are Used to Address Specific Applications or Services on the Host)
-                std::cout << "src port: " << ntohs(udp_hdr->uh_sport) << std::endl;
+                std::cout << "src port: "               << createPadding(16) << ntohs(udp_hdr->uh_sport) << std::endl;
                 
                 // Destination Port Identifies the Application or Service on the Target Host
-                std::cout << "dst port: " << ntohs(udp_hdr->uh_dport) << std::endl;
+                std::cout << "dst port: "               << createPadding(16) << ntohs(udp_hdr->uh_dport) << std::endl;
                 break;
             }
             case IPPROTO_ICMP: {
@@ -169,11 +178,11 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct icmphdr *icmp_hdr = (struct icmphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Type of ICMP Message (e.g. Echo Request [8], Echo Reply [0], Destination Unreachable [3],.. -> Identifies What Message Signalizes)
-                std::cout << "ICMP type: " << static_cast<int>(icmp_hdr->type) << std::endl;
+                std::cout << "ICMPv4 type: "              << createPadding(13) << static_cast<int>(icmp_hdr->type) << std::endl;
                 
                 // Information About What Caused the ICMP message - For Type 3 (Destination Unreachable), 
                 // the Code Specifies the Reason Why the Destination is Unreachable, such as 'Port Unreachable' (code 3) or 'Network Unreachable' (code 0)
-                std::cout << "ICMP code: " << static_cast<int>(icmp_hdr->code) << std::endl;
+                std::cout << "ICMPv4 code: "              << createPadding(13) << static_cast<int>(icmp_hdr->code) << std::endl;
                 break;
             }
             case IPPROTO_IGMP: {
@@ -181,13 +190,13 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct igmp *igmp_hdr = (struct igmp *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Type of Typ IGMP Message (e.g. Query, Report)
-                std::cout << "IGMP type: " << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
+                std::cout << "IGMP type: "              << createPadding(15) << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
                 
                 // Max Response Time (Used in IGMP Query)
-                std::cout << "IGMP max resp time: " << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
+                std::cout << "IGMP max resp time: "     << createPadding(6) << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
                 
                 // Target Group Adress For IGMP Message
-                std::cout << "IGMP group address: " << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
+                std::cout << "IGMP group address: "     << createPadding(6) << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
                 break;                
             }
         }

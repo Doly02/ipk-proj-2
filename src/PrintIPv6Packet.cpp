@@ -36,8 +36,8 @@ void Sniffer::processIPv6Packet(const uint8_t *packet) {
     inet_ntop(AF_INET6, &ip6_hdr->ip6_dst, dst_ip, INET6_ADDRSTRLEN);
 
     // Výpis zdrojové a cílové adresy
-    std::cout << "src IP: " << src_ip << std::endl;
-    std::cout << "dst IP: " << dst_ip << std::endl;
+    std::cout << "src IP: " << createPadding(18) << src_ip << std::endl;
+    std::cout << "dst IP: " << createPadding(18) << dst_ip << std::endl;
 
     // Zpracování další hlavičky dle typu
     int next_header = ip6_hdr->ip6_nxt;
@@ -48,12 +48,12 @@ void Sniffer::processIPv6Packet(const uint8_t *packet) {
             {
                 // Specifies the ICMPv6 Message Type (e.g. 128] Echo Request -> echo request, used in ping, [129] Echo Reply -> echo reply, used in ping
                 // [134] Router Advertisement, [135] Neighbor Solicitation, [136] Neighbor Advertisement)
-                std::cout << "ICMPv6 type: " << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
+                std::cout << "ICMPv6 type: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
                 // Provides Additional Context or Specification for the ICMPv6 Message Type
                 // The Code Specifies the Reason or Manner in Which the Message was Generated, Depending on the Message Type
                 // (e.g. For Type [1] -> Different Codes Can Indicate Different Reasons Why the Destination is Unreachable, Such as:
                 // Code 0: no Route to the Destination, Code 1: Communication With the Destination Administratively )
-                std::cout << "ICMPv6 code: " << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
+                std::cout << "ICMPv6 code: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
                 // Print MLD Type if Packet Is Subtype of MLD
                 processMLDMessage(icmp6_hdr);
                 processNDPMessage(icmp6_hdr);
@@ -95,16 +95,16 @@ const struct icmp6_hdr* Sniffer::findICMPv6Header(const struct ip6_hdr *ip6_hdr)
 void Sniffer::processMLDMessage(const struct icmp6_hdr* icmp6_hdr) {
     switch (icmp6_hdr->icmp6_type) {
         case 130:  // MLDv1 Query
-            std::cout << "ICMPv6 Subtype: MLDv1 - Query" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Query" << std::endl;
             break;
         case 131:  // MLDv1 Report
-            std::cout << "ICMPv6 Subtype: MLDv1 - Report" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Report" << std::endl;
             break;
         case 132:  // MLDv1 Done
-            std::cout << "ICMPv6 Subtype: MLDv1 - Done" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Done" << std::endl;
             break;
         case 143:  // MLDv2 Report
-            std::cout << "ICMPv6 Subtype: MLDv2 - Report" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv2 - Report" << std::endl;;
             break;
         default:
             break;
@@ -118,23 +118,23 @@ void Sniffer::processNDPMessage(const struct icmp6_hdr *icmp6_hdr) {
     switch (icmp6_hdr->icmp6_type) {
 
         case ROUTER_SOLICITATION:   
-            std::cout << "ICMPv6 Subtype: NDP - Router Solicitation" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "NDP - Router Solicitation" << std::endl;
             break;
 
         case ROUTER_ADVERTISEMENT:   
-            std::cout << "ICMPv6 Subtype: NDP - Router Advertisement" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "NDP - Router Advertisement" << std::endl;
             break;
         
         case NEIGHBOR_SOLICITATION:   
-            std::cout << "ICMPv6 Subtype: NDP - Neighbor Solicitation" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "NDP - Neighbor Solicitation" << std::endl;
             break;
 
         case NEIGHBOR_ADVERTISEMENT:  
-            std::cout << "ICMPv6 Subtype: NDP - Neighbor Advertisement" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "NDP - Neighbor Advertisement" << std::endl;
             break;
 
         case REDIRECT:  
-            std::cout << "ICMPv6 Subtype: NDP - Redirect Message" << std::endl;
+            std::cout << "ICMPv6 Subtype: " << createPadding(10) << "NDP - Redirect Message" << std::endl;
             break;
             
         default:

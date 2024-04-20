@@ -27,6 +27,7 @@
 #include <vector>
 #include <cstring>
 #include <iomanip>
+#include <bitset>
 #include <sstream>
 #include <ctime>
 #include <netinet/in.h>
@@ -69,6 +70,7 @@ class Sniffer {
         void startCapture();
         void stopCapture();
 
+        static std::string createPadding(int size);
 
         static std::string formatMac(const u_char* mac);
 
