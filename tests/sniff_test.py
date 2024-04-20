@@ -20,20 +20,20 @@ init(autoreset=True)
 
 def send_packet(packet_type):
 
-    if packet_type == 143:
-        packet = prep_mld_143()
+    if packet_type == 'MLD2_REP':
+        packet = prep_mld2_report()
         send(packet, verbose=False)
 
-    elif packet_type == 130:
-        packet = prep_mld_130()
+    elif packet_type == 'MLD1_QUE':
+        packet = prep_mld1_query()
         send(packet, verbose=False)
 
-    elif packet_type == 131:
-        packet = prep_mld_131()
+    elif packet_type == 'MLD1_REP':
+        packet = prep_mld1_report()
         send(packet, verbose=False)
 
-    elif packet_type == 132:
-        packet = prep_mld_132()
+    elif packet_type == 'MLD1_DON':
+        packet = prep_mld1_done()
         send(packet, verbose=False)
 
     elif packet_type == 'NDP_RS':
@@ -47,7 +47,6 @@ def send_packet(packet_type):
     elif packet_type == 'NDP_RA':
         packet = prep_ndp_ra()
         send(packet, verbose=False)
-
 
     elif packet_type == 'NDP_NA':
         packet = prep_ndp_na_broadcast()
@@ -82,7 +81,7 @@ def send_packet(packet_type):
         send(packet, verbose=False)
 
 def run_sniffer(output_queue,packet_type):
-    if packet_type in [143,130,131,132]:
+    if packet_type in ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--mld"]
     elif packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--ndp"]
@@ -101,22 +100,22 @@ def run_sniffer(output_queue,packet_type):
 
 def check_packet(output,packet_type=143):
 
-    if packet_type == 143:
+    if packet_type == 'MLD2_REP':
         expected_src_ip = "2001:db8:85a3::8a2e:370:7334"
         expected_dst_ip = "ff02::16"
         expected_icmpv6_type = "143"
 
-    elif packet_type == 130:
+    elif packet_type == 'MLD1_QUE':
         expected_src_ip = "2001:db8:85a3::8a2e:370:7334"
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "130"
 
-    elif packet_type == 131:
+    elif packet_type == 'MLD1_REP':
         expected_src_ip = "2001:db8:85a3::8a2e:370:7334"
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "131"
 
-    elif packet_type == 132:
+    elif packet_type == 'MLD1_DON':
         expected_src_ip = "2001:db8:85a3::8a2e:370:7334"
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "132"
@@ -174,15 +173,15 @@ def check_packet(output,packet_type=143):
         expected_icmpv4_code = "0"
 
     # Regex to Capture Necessary Parts of the Packet
-    src_ip_match = re.search(r"src IP: (\S+)", output)
-    dst_ip_match = re.search(r"dst IP: (\S+)", output)
-    icmpv6_type_match = re.search(r"ICMPv6 type: (\d+)", output)
-    sender_mac_match = re.search(r"Sender MAC: (\S+)", output)
-    target_mac_match = re.search(r"Target MAC: (\S+)", output)
-    sender_ip_match = re.search(r"Sender IP: (\S+)", output)
-    target_ip_match = re.search(r"Target IP: (\S+)", output)
-    icmpv4_type_match = re.search(r"ICMP type: (\d+)", output)
-    icmpv4_code_match = re.search(r"ICMP code: (\d+)", output)
+    src_ip_match = re.search(r"src IP:[ ]*(\S+)", output)
+    dst_ip_match = re.search(r"dst IP:[ ]*(\S+)", output)
+    icmpv6_type_match = re.search(r"ICMPv6 type:[ ]*(\d+)", output)
+    sender_mac_match = re.search(r"Sender MAC:[ ]*(\S+)", output)
+    target_mac_match = re.search(r"Target MAC:[ ]*(\S+)", output)
+    sender_ip_match = re.search(r"Sender IP:[ ]*(\S+)", output)
+    target_ip_match = re.search(r"Target IP:[ ]*(\S+)", output)
+    icmpv4_type_match = re.search(r"ICMPv4 type:[ ]*(\d+)", output)
+    icmpv4_code_match = re.search(r"ICMPv4 code:[ ]*(\d+)", output)
 
     if src_ip_match and dst_ip_match and icmpv6_type_match:
         src_ip = src_ip_match.group(1)
@@ -190,7 +189,7 @@ def check_packet(output,packet_type=143):
         icmpv6_type = icmpv6_type_match.group(1)
 
         # Compare Against Expected Values
-        if (packet_type in [143, 130, 131, 132] and src_ip == expected_src_ip and dst_ip == expected_dst_ip and
+        if (packet_type in ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON'] and src_ip == expected_src_ip and dst_ip == expected_dst_ip and
             icmpv6_type == expected_icmpv6_type):
             print(f"Packet Fully Matched {packet_type}")
             return True
@@ -203,8 +202,8 @@ def check_packet(output,packet_type=143):
                 print(f"Packet Not Matched (Catched: {icmpv6_type})")
             return True
     else:
-        dst_ip_match = re.search(r"dst IP: (\S+)", output)
-        icmpv4 = re.search(r"IGMP type: (\d+)", output)
+        dst_ip_match = re.search(r"dst IP:[ ]*(\S+)", output)
+        icmpv4 = re.search(r"IGMP type:[ ]*(\d+)", output)
 
         if (packet_type in ['IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE'] and dst_ip_match and icmpv4):
             dst_ip = dst_ip_match.group(1)
@@ -247,25 +246,29 @@ def check_packet(output,packet_type=143):
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE','ARP_REQUEST','ARP_REPLY','ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']
+    packet_types = ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON',
+                    'NDP_RS','NDP_NS','NDP_RA','NDP_NA',
+                    'IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE',
+                    'ARP_REQUEST','ARP_REPLY',
+                    'ICMP_ECHO_REQUEST','ICMP_ECHO_REPLY']
     interface = 'wlp4s0'
     test_idx = 1
 
 
-    for mld_type in packet_types:
+    for pct_type in packet_types:
         output_queue = Queue() 
-        sniffer_thread = threading.Thread(target=run_sniffer, args=(output_queue,mld_type ))
+        sniffer_thread = threading.Thread(target=run_sniffer, args=(output_queue,pct_type ))
         sniffer_thread.start()
         time.sleep(1) 
 
-        send_packet(mld_type)
+        send_packet(pct_type)
         sniffer_thread.join(timeout=2)
         output = "".join(list(output_queue.queue))
 
-        if check_packet(output, mld_type):
-            print(Fore.GREEN + f"TEST: {test_idx} [type {mld_type} packet] captured and verified.")
+        if check_packet(output, pct_type):
+            print(Fore.GREEN + f"TEST: {test_idx} [type {pct_type} packet] captured and verified.")
         else:
-            print(Fore.RED + f"TEST: {test_idx} [type {mld_type} packet] Failed to verify.")
+            print(Fore.RED + f"TEST: {test_idx} [type {pct_type} packet] Failed to verify.")
             print("Output is: ")
             print(output)
         test_idx += 1  

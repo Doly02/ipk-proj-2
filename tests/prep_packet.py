@@ -71,7 +71,7 @@ def send_igmp_packet(packet, destination):
 
 
 # MLD Packets 
-def prep_mld_130():
+def prep_mld1_query():
     """ 
     Prepaires MLDv2 Query packet
     """
@@ -81,7 +81,7 @@ def prep_mld_130():
     mld = ICMPv6MLQuery()
     return ip/mld
 
-def prep_mld_131():
+def prep_mld1_report():
     """ 
     Prepaires MLDv2 Report packet
     """
@@ -91,7 +91,7 @@ def prep_mld_131():
     mld = ICMPv6MLReport()
     return ip/mld
 
-def prep_mld_132():
+def prep_mld1_done():
     """
     Prepaires MLDv2 Done packet
     """
@@ -102,7 +102,7 @@ def prep_mld_132():
     mld = ICMPv6MLDone()                            # Create MLD Done message
     return ip/mld                                   # Assembly packet
 
-def prep_mld_143():
+def prep_mld2_report():
     """
     Prepaires MLDv2 Report packet
     """
