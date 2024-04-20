@@ -8,9 +8,8 @@ import subprocess
 import os
 import time
 import re
-
-MLD = 1
-NDP = 2
+import socket
+import struct
 
 # Create Virtual Interface For Testing Packets: 
 # sudo ip link add name virt0 type dummy
@@ -27,6 +26,60 @@ def get_interface_ipv6_address(interface):
         return ipv6_addr
     except (ValueError, KeyError):
         return None
+
+
+
+# Funkce pro výpočet kontrolního součtu IGMP
+def checksum(msg):
+    s = 0
+    for i in range(0, len(msg), 2):
+        w = (msg[i] << 8) + (msg[i+1] if i+1 < len(msg) else 0)
+        s = s + w
+
+    s = (s >> 16) + (s & 0xffff)
+    s = s + (s >> 16)
+    return ~s & 0xffff
+
+
+def prep_igmp_query():
+    """
+    Připraví IGMP Query packet.
+    """
+    type_igmp = 0x11        # Typ pro IGMP Query
+    max_resp_time = 100     # Maximální odpověď v desetinách sekundy
+    group_address = socket.inet_aton('0.0.0.0')  # Skupinová adresa (pro general query je to 0.0.0.0)
+    igmp_packet = struct.pack('!BBH4s', type_igmp, max_resp_time, 0, group_address)
+    chksum = checksum(igmp_packet)
+    igmp_packet = struct.pack('!BBH4s', type_igmp, max_resp_time, socket.htons(chksum), group_address)
+    return igmp_packet
+
+
+def prep_igmp_report():
+    """
+    Připraví IGMP Report packet.
+    """
+    type_igmp = 0x16  # Typ pro IGMP v2 Membership Report
+    group_address = socket.inet_aton('224.0.0.5')  # Cílová multicastová adresa
+    igmp_packet = struct.pack('!BBH4s', type_igmp, 0, 0, group_address)
+    chksum = checksum(igmp_packet)
+    igmp_packet = struct.pack('!BBH4s', type_igmp, 0, socket.htons(chksum), group_address)
+    return igmp_packet
+
+def prep_igmp_leave():
+    """
+    Připraví IGMP Leave Group packet.
+    """
+    type_igmp = 0x17  # Typ pro IGMP Leave Group
+    group_address = socket.inet_aton('224.0.0.5')  # Cílová multicastová adresa
+    igmp_packet = struct.pack('!BBH4s', type_igmp, 0, 0, group_address)
+    chksum = checksum(igmp_packet)
+    igmp_packet = struct.pack('!BBH4s', type_igmp, 0, socket.htons(chksum), group_address)
+    return igmp_packet
+
+def send_igmp_packet(packet, destination):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IGMP)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, struct.pack('b', 1))
+    sock.sendto(packet, (destination, 0))
 
 
 # MLD Packets 
@@ -135,35 +188,57 @@ def send_packet(packet_type):
 
     if packet_type == 143:
         packet = prep_mld_143()
-    
+        send(packet, verbose=False)
+
     elif packet_type == 130:
         packet = prep_mld_130()
+        send(packet, verbose=False)
 
     elif packet_type == 131:
         packet = prep_mld_131()
+        send(packet, verbose=False)
 
     elif packet_type == 132:
         packet = prep_mld_132()
+        send(packet, verbose=False)
 
     elif packet_type == 'NDP_RS':
         packet = prep_ndp_rs()
+        send(packet, verbose=False)
 
     elif packet_type == 'NDP_NS':
         packet = prep_ndp_ns()
-    
+        send(packet, verbose=False)
+
     elif packet_type == 'NDP_RA':
         packet = prep_ndp_ra()
-    
+        send(packet, verbose=False)
+
+
     elif packet_type == 'NDP_NA':
         packet = prep_ndp_na_broadcast()
+        send(packet, verbose=False)
+
+    elif packet_type == 'IGMP_QUERY':
+        packet = prep_igmp_query()
+        send_igmp_packet(packet, '224.0.0.1')
+
+    elif packet_type == 'IGMP_REPORT':
+        packet = prep_igmp_report()
+        send_igmp_packet(packet, '224.0.0.2') 
+
+    elif packet_type == 'IGMP_LEAVE':
+        packet = prep_igmp_leave()
+        send_igmp_packet(packet, '224.0.0.2') 
     
-    send(packet, verbose=False)
 
 def run_sniffer(output_queue,packet_type):
     if packet_type in [143,130,131,132]:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--mld"]
     elif packet_type in ['NDP_RS','NDP_NS','NDP_RA','NDP_NA']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--ndp"]
+    elif packet_type in ['IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE']:
+        command = [".././ipk-sniffer", "-i", "wlp4s0", "--igmp"]
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
         for line in process.stdout:
@@ -196,18 +271,33 @@ def check_packet(output,packet_type=143):
         expected_src_ip = "2001:db8:85a3::1"
         expected_dst_ip = "ff02::2"
         expected_icmpv6_type = "133"  # ICMPv6 type for Router Solicitation
+        
     elif packet_type == 'NDP_NS':
         expected_src_ip = "2001:db8:85a3::1"
         expected_dst_ip = "ff02::1:ff00:0002"
         expected_icmpv6_type = "135"  # ICMPv6 type for Neighbor Solicitation
+
     elif packet_type == 'NDP_RA':
         expected_src_ip = "2001:db8:85a3::1"
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "134"  # ICMPv6 type for Router Advertisement
+
     elif packet_type == 'NDP_NA':
         expected_src_ip = "2001:db8:1:2::1"
         expected_dst_ip = "ff02::1"
         expected_icmpv6_type = "136"  # ICMPv6 type for Neighbor Advertisement
+
+    elif packet_type == 'IGMP_QUERY':
+        expected_dst_ip = "224.0.0.1"
+        expected_icmpv6_type = "17"
+    
+    elif packet_type == 'IGMP_REPORT': 
+        expected_dst_ip = "224.0.0.2"
+        expected_icmpv6_type = "22"
+
+    elif packet_type == 'IGMP_LEAVE':
+        expected_dst_ip = "224.0.0.2"
+        expected_icmpv6_type = "23"
 
     # Regex to Capture Necessary Parts of the Packet
     src_ip_match = re.search(r"src IP: (\S+)", output)
@@ -232,12 +322,27 @@ def check_packet(output,packet_type=143):
             else:
                 print(f"Packet Not Matched (Catched: {icmpv6_type})")
             return True
+    else:
+        dst_ip_match = re.search(r"dst IP: (\S+)", output)
+        icmpv4 = re.search(r"IGMP type: (\d+)", output)
+
+        if (packet_type in ['IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE'] and dst_ip_match and icmpv4):
+            dst_ip = dst_ip_match.group(1)
+            icmpv4_type = icmpv4.group(1)
+            if dst_ip == expected_dst_ip and icmpv4_type == expected_icmpv6_type:
+                print(f"Packet Fully Matched {packet_type}")
+            else:
+                print(output)
+            return True
+        else:
+            print(output)
+
     return False
 
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA']
+    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE']
     interface = 'wlp4s0'
     test_idx = 1
 
