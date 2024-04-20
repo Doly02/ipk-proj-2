@@ -2,6 +2,9 @@ import threading
 from scapy.all import send, IPv6, ICMPv6MLReport2,ICMPv6MLQuery,ICMPv6MLReport,ICMPv6MLDone
 from scapy.all import ICMPv6ND_RS, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA, ICMPv6ND_Redirect, ICMPv6NDOptSrcLLAddr
 from scapy.all import ICMPv6NDOptMTU, ICMPv6NDOptPrefixInfo,ICMPv6NDOptDstLLAddr
+from scapy.all import ARP, Ether, sendp
+from scapy.all import IP, ICMP
+
 import netifaces as ni # To get the interface IP address
 from colorama import init, Fore
 import subprocess
@@ -27,10 +30,10 @@ def get_interface_ipv6_address(interface):
     except (ValueError, KeyError):
         return None
 
-
-
-# Funkce pro výpočet kontrolního součtu IGMP
 def checksum(msg):
+    """
+    Function for Calculation of IGMP Checksum
+    """
     s = 0
     for i in range(0, len(msg), 2):
         w = (msg[i] << 8) + (msg[i+1] if i+1 < len(msg) else 0)
@@ -45,9 +48,9 @@ def prep_igmp_query():
     """
     Připraví IGMP Query packet.
     """
-    type_igmp = 0x11        # Typ pro IGMP Query
-    max_resp_time = 100     # Maximální odpověď v desetinách sekundy
-    group_address = socket.inet_aton('0.0.0.0')  # Skupinová adresa (pro general query je to 0.0.0.0)
+    type_igmp = 0x11                                # Type for IGMP Query
+    max_resp_time = 100                             # Maximal Response in Tenths of a Second
+    group_address = socket.inet_aton('0.0.0.0')     # Group Address (For General Query is 0.0.0.0)
     igmp_packet = struct.pack('!BBH4s', type_igmp, max_resp_time, 0, group_address)
     chksum = checksum(igmp_packet)
     igmp_packet = struct.pack('!BBH4s', type_igmp, max_resp_time, socket.htons(chksum), group_address)
@@ -58,8 +61,8 @@ def prep_igmp_report():
     """
     Připraví IGMP Report packet.
     """
-    type_igmp = 0x16  # Typ pro IGMP v2 Membership Report
-    group_address = socket.inet_aton('224.0.0.5')  # Cílová multicastová adresa
+    type_igmp = 0x16                                # Type for IGMP v2 Membership Report
+    group_address = socket.inet_aton('224.0.0.5')   # Destination Multicast Address
     igmp_packet = struct.pack('!BBH4s', type_igmp, 0, 0, group_address)
     chksum = checksum(igmp_packet)
     igmp_packet = struct.pack('!BBH4s', type_igmp, 0, socket.htons(chksum), group_address)
@@ -69,8 +72,8 @@ def prep_igmp_leave():
     """
     Připraví IGMP Leave Group packet.
     """
-    type_igmp = 0x17  # Typ pro IGMP Leave Group
-    group_address = socket.inet_aton('224.0.0.5')  # Cílová multicastová adresa
+    type_igmp = 0x17                                # Type for IGMP Leave Group
+    group_address = socket.inet_aton('224.0.0.5')   # Destination Multicast Address
     igmp_packet = struct.pack('!BBH4s', type_igmp, 0, 0, group_address)
     chksum = checksum(igmp_packet)
     igmp_packet = struct.pack('!BBH4s', type_igmp, 0, socket.htons(chksum), group_address)
@@ -89,7 +92,7 @@ def prep_mld_130():
     """
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
-    ip = IPv6(src=src_address, dst=dst_address)  # FF02::1 je adresa pro všechny uzly na lokálním segmentu
+    ip = IPv6(src=src_address, dst=dst_address)  # FF02::1 Address For All Nodes On Local Segment
     mld = ICMPv6MLQuery()
     return ip/mld
 
@@ -184,6 +187,38 @@ def prep_ndp_na_broadcast():
 
     # Manually Add MAC Address To Neighbor Cache: sudo ip -6 neigh add 2001:db8:85a3::1 lladdr 00:1c:23:12:34:56 dev wlp4s0
 
+def prep_arp_request():
+    """
+    Připraví ARP Request Packet.
+    """
+    src_ip = "192.168.1.10"
+    dst_ip = "192.168.1.20"
+    src_mac = "aa:bb:cc:dd:ee:ff"
+
+    # Ethernet Header: Broadcast MAC as the Destination
+    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+    # ARP Header
+    arp = ARP(pdst=dst_ip, psrc=src_ip, hwsrc=src_mac, op="who-has")
+    return ether / arp
+
+def prep_arp_reply():
+    """
+    Prepaires ARP Reply Packet.
+    """
+    src_ip = "192.168.1.20"
+    dst_ip = "192.168.1.10"
+    src_mac = "ff:ee:dd:cc:bb:aa"
+    dst_mac = "aa:bb:cc:dd:ee:ff"
+
+    # Ethernet header
+    ether = Ether(dst=dst_mac)
+    # ARP header
+    arp = ARP(pdst=dst_ip, psrc=src_ip, hwdst=dst_mac, hwsrc=src_mac, op="is-at")
+    return ether / arp
+
+
+
+
 def send_packet(packet_type):
 
     if packet_type == 143:
@@ -231,6 +266,13 @@ def send_packet(packet_type):
         packet = prep_igmp_leave()
         send_igmp_packet(packet, '224.0.0.2') 
     
+    elif packet_type == 'ARP_REQUEST':
+        packet = prep_arp_request()
+        sendp(packet, verbose=False)  # Send on Link Layer
+
+    elif packet_type == 'ARP_REPLY':
+        packet = prep_arp_reply()
+        sendp(packet, verbose=False)  # Send on Link Layer
 
 def run_sniffer(output_queue,packet_type):
     if packet_type in [143,130,131,132]:
@@ -239,6 +281,8 @@ def run_sniffer(output_queue,packet_type):
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--ndp"]
     elif packet_type in ['IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE']:
         command = [".././ipk-sniffer", "-i", "wlp4s0", "--igmp"]
+    elif packet_type in ['ARP_REQUEST','ARP_REPLY']:
+        command = [".././ipk-sniffer", "-i", "wlp4s0", "--arp"]
 
     with subprocess.Popen(command, stdout=subprocess.PIPE, text=True) as process:
         for line in process.stdout:
@@ -271,7 +315,7 @@ def check_packet(output,packet_type=143):
         expected_src_ip = "2001:db8:85a3::1"
         expected_dst_ip = "ff02::2"
         expected_icmpv6_type = "133"  # ICMPv6 type for Router Solicitation
-        
+
     elif packet_type == 'NDP_NS':
         expected_src_ip = "2001:db8:85a3::1"
         expected_dst_ip = "ff02::1:ff00:0002"
@@ -299,10 +343,26 @@ def check_packet(output,packet_type=143):
         expected_dst_ip = "224.0.0.2"
         expected_icmpv6_type = "23"
 
+    elif packet_type == 'ARP_REQUEST':
+        expected_sender_mac = "aa:bb:cc:dd:ee:ff"
+        expected_src_ip = "192.168.1.10"
+        expected_target_mac = "00:00:00:00:00:00"
+        expected_target_ip = "192.168.1.20"
+
+    elif packet_type == 'ARP_REPLY':
+        expected_sender_mac = "ff:ee:dd:cc:bb:aa"
+        expected_src_ip = "192.168.1.20"
+        expected_target_mac = "aa:bb:cc:dd:ee:ff"
+        expected_target_ip = "192.168.1.10"
+
     # Regex to Capture Necessary Parts of the Packet
     src_ip_match = re.search(r"src IP: (\S+)", output)
     dst_ip_match = re.search(r"dst IP: (\S+)", output)
     icmpv6_type_match = re.search(r"ICMPv6 type: (\d+)", output)
+    sender_mac_match = re.search(r"Sender MAC: (\S+)", output)
+    target_mac_match = re.search(r"Target MAC: (\S+)", output)
+    sender_ip_match = re.search(r"Sender IP: (\S+)", output)
+    target_ip_match = re.search(r"Target IP: (\S+)", output)
 
     if src_ip_match and dst_ip_match and icmpv6_type_match:
         src_ip = src_ip_match.group(1)
@@ -334,15 +394,33 @@ def check_packet(output,packet_type=143):
             else:
                 print(output)
             return True
+
+        elif (packet_type in ['ARP_REQUEST','ARP_REPLY']):
+            if sender_ip_match and target_ip_match and sender_mac_match and target_mac_match:
+                sender_ip = sender_ip_match.group(1)
+                target_ip = target_ip_match.group(1)
+                src_mac = sender_mac_match.group(1)
+                dst_mac = target_mac_match.group(1)
+                
+                # Zde pokračujte ve vašem logickém ověřování...
+                if (sender_ip == expected_src_ip and target_ip == expected_target_ip and
+                    dst_mac == expected_target_mac and src_mac == expected_sender_mac):
+                    print(f"ARP Packet Fully Matched {packet_type}")
+                    return True
+                else:
+                    # Not Matched
+                    print(Fore.YELLOW,"NOTE: Necessary packet details not found in output.")
+                    return False
         else:
             print(output)
 
+    print(Fore.YELLOW,"NOTE: Necessary packet details not found in output.")
     return False
 
 
 if __name__ == "__main__":
     from queue import Queue
-    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE']
+    packet_types = [143, 130, 131, 132,'NDP_RS','NDP_NS','NDP_RA','NDP_NA','IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE','ARP_REQUEST','ARP_REPLY']
     interface = 'wlp4s0'
     test_idx = 1
 
