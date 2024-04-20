@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
         return retVal;
     }
 
+    std::signal(SIGINT, Sniffer::handleSignal);         // Handle SIGINT Signal
     std::string filter = config.generateFilter();
     try {
         Sniffer sniffer(config.interface.c_str(), filter, config.num);

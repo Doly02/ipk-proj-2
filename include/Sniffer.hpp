@@ -43,7 +43,7 @@
 #include <arpa/inet.h>              // For inet_ntop
 #include <net/ethernet.h>           // For ether_header
 #include <arpa/inet.h>    
-
+#include <csignal>
 
 class Sniffer {
     private:
@@ -58,16 +58,24 @@ class Sniffer {
         std::string filterExpression;
         int maxPackets;
         pcap_t* deviceHandle;
-
+        static Sniffer* currentInstance; 
 
         void setupDevice();
+        
         void applyFilter();
+        
         void processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header);
+    
     public:
+    
         Sniffer(const std::string& interfaceName, const std::string& filter, int maxPackets);
+        
         ~Sniffer();
 
+        static void handleSignal(int signal);  
+
         void startCapture();
+
         void stopCapture();
 
         static std::string createPadding(int size);

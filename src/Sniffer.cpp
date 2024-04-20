@@ -21,10 +21,11 @@
 #include "../include/Sniffer.hpp"
 #include "../include/macros.hpp"
 #include <iostream>
+
+Sniffer* Sniffer::currentInstance = nullptr;
 /************************************************/
 /*               Class Methods                  */
 /************************************************/
-
 
 /**
  * @brief Construct a new IPv4PacketSniffer::IPv4PacketSniffer object
@@ -39,6 +40,7 @@ Sniffer::Sniffer(const std::string& interfaceName, const std::string& filter, in
         maxPackets(maxPackets), 
         deviceHandle(nullptr) {
         setupDevice(); // Setup device
+        currentInstance = this;
 }
 /**
  * @brief Destruct a new IPv4PacketSniffer::IPv4PacketSniffer object
@@ -48,10 +50,20 @@ Sniffer::~Sniffer() {
     if (deviceHandle) {
         pcap_close(deviceHandle);  // Close pcap Handle
     }
+    if (currentInstance == this) {
+        currentInstance = nullptr;  // Delete Pointer To Current Instance
+    }
+}
+
+void Sniffer::handleSignal(int signal) {
+    if (Sniffer::currentInstance && signal == SIGINT) {
+        printf("Signal SIGINT received\n");
+        pcap_breakloop(Sniffer::currentInstance->deviceHandle); // Safety Break Loop
+    }
 }
 
 std::string Sniffer::createPadding(int size) {
-    return std::string(size, ' ');  // Vrátí řetězec o dané délce vyplněný mezerami
+    return std::string(size, ' ');  // Create Padding
 }
 
 void Sniffer::processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header) {
