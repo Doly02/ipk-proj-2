@@ -331,32 +331,32 @@ The manual testing of the program was ongoing at the beginning of the program de
 **Note:** Also other NDP packets were tested as well (e.g.`ICMPv6 Router Advertisement`, `ICMPv6 Neighbor Solicitation` and `CMPv6 Neighbor Advertisement`).  
 
 #### Address Resolution Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --arp`.   
-*Terminal 2.* Sends `ARP Request` packet.   
-*Expected outcome* Sniffed `ARP Request` packet in *Terminal 1*.   
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --arp`.  
+*Terminal 2.* Sends `ARP Request` packet.  
+*Expected outcome* Sniffed `ARP Request` packet in *Terminal 1*.  
 **Note:** Also other ARP packet was tested as well (e.g.`ARP Reply`).   
 
 #### Internet Control Message Protocol v4 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp4`.    
-*Terminal 2.* Sends `ICMPv4 Echo Reply` packet.    
-*Expected outcome* Sniffed `ICMPv4 Echo Reply` packet in *Terminal 1*.    
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp4`.   
+*Terminal 2.* Sends `ICMPv4 Echo Reply` packet.  
+*Expected outcome* Sniffed `ICMPv4 Echo Reply` packet in *Terminal 1*.   
 **Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv4 Echo Request`).   
 
 #### Internet Control Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.   
-*Terminal 2.* Sends `ICMPv6 Echo Request` packet.   
-*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.   
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.  
+*Terminal 2.* Sends `ICMPv6 Echo Request` packet.  
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.  
 **Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv6 Echo Reply`).   
 
 #### Internet Control Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.   
-*Terminal 2.* Sends `ICMPv6 Echo Request` packet.   
-*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.   
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.  
+*Terminal 2.* Sends `ICMPv6 Echo Request` packet.  
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.  
 **Note:** Also other ICMPv6 packet was tested as well (e.g.`ICMPv6 Echo Reply`), it's also possible during the actual use it is possible to sniff also MLD and NDL packets, as they are subtypes.   
 
 #### Internet Group Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --igmp`.    
-*Terminal 2.* Sends `IGMP Query` packet.   
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --igmp`.   
+*Terminal 2.* Sends `IGMP Query` packet.  
 *Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*.  
 **Note:** Also other ICMPv6 packet was tested as well (e.g.`IGMP Report`,`IGMP Leave Group`).   
 
