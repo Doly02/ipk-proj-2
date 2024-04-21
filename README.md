@@ -87,31 +87,190 @@ Transmission Control Protocol (TCP) is a foundational technology for the Interne
 
 TCP is used for loading web pages via HTTP (Hypertext Transfer Protocol) and HTTPS (HTTP Secure). Protocols such as SMTP (Simple Mail Transfer Protocol) for sending emails, POP (Post Office Protocol) and IMAP (Internet Message Access Protocol) for retrieving emails, rely on TCP to ensure messages are sent and received without errors. Also another protocols like FTP (File Transfer Protocol), SFTP (SSH File Transfer Protocol), SLL (Secure Sockets Layer), etc.
 
+```
+ipk@ipk:~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --tcp
+==========================================================================
+Timestamp:                2024-04-21T17:48:13.538416+00:00
+Source MAC:               64:fd:96:92:fb:72
+Destination MAC:          14:5a:fc:50:b8:4f
+Frame Length:             66 bytes
+Source IP:                54.173.95.250
+Destination IP:           192.168.1.21
+TTL:                      245
+Source Port:              443
+Destination port:         43820
+Sequence Number:          150434667
+Acknowledgment Number:    1124707723
+Flags:                    00010000
+Window Size:              27
+
+0x0000: 14 5a fc 50 b8 4f 64 fd 96 92 fb 72 08 00 45 00  .Z.P.Od. ...r..E.
+0x0010: 00 34 ad d6 40 00 f5 06 7f 88 36 ad 5f fa c0 a8  .4..@... ..6._...
+0x0020: 01 15 01 bb ab 2c 08 f7 73 6b 43 09 ad 8b 80 10  .....,.. skC.....
+0x0030: 00 1b 13 0b 00 00 01 01 08 0a 9c ca 2c 1e 68 b1  ........ ....,.h.
+0x0040: bf b9                                            ..
+```
+
 #### User Datagram Protocol (UDP)
 User Datagram Protocol (UDP) is a communication protocol that facilitates the transmission of data across networks without establishing a connection or verifying the delivery of data. It is often referred to as a "connectionless" or "fire-and-forget" protocol because it sends data without ensuring that it reaches the recipient. This trait makes UDP particularly suitable for real-time applications where speed is more critical than reliability.[4]
 
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --udp
+==========================================================================
+Timestamp:                2024-04-21T17:49:02.660997+00:00
+Source MAC:               14:5a:fc:50:b8:4f
+Destination MAC:          64:fd:96:92:fb:72
+Frame Length:             99 bytes
+Source IP:                192.168.1.21
+Destination IP:           8.8.8.8
+TTL:                      64
+Source Port:              55851
+Destination Port:         53
+UDP Length:               65 bytes
+
+0x0000: 64 fd 96 92 fb 72 14 5a fc 50 b8 4f 08 00 45 00  d....r.Z .P.O..E.
+0x0010: 00 55 ec 1b 40 00 40 11 7c af c0 a8 01 15 08 08  .U..@.@. |.......
+0x0020: 08 08 da 2b 00 35 00 41 d2 1f 6b 56 01 20 00 01  ...+.5.A ..kV. ..
+0x0030: 00 00 00 00 00 01 10 6e 6f 74 69 66 69 65 72 2d  .......n otifier-
+0x0040: 63 6f 6e 66 69 67 73 08 61 69 72 62 72 61 6b 65  configs. airbrake
+0x0050: 02 69 6f 00 00 01 00 01 00 00 29 04 b0 00 00 00  .io..... ..).....
+0x0060: 00 00 00                                         ...
+```
 
 #### Internet Control Message Protocol (ICMP)
 The Internet Control Message Protocol (ICMP) is a network layer protocol that plays a crucial role in diagnosing and reporting network communication issues. It is widely used by network devices like routers to ensure data is reaching its intended destination efficiently and to handle errors in network communications. ICMP does not establish a connection before sending messages.[5]
 
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --icmp4
+==========================================================================
+Timestamp:                2024-04-21T17:51:16.206455+00:00
+Source MAC:               14:5a:fc:50:b8:4f
+Destination MAC:          64:fd:96:92:fb:72
+Frame Length:             98 bytes
+Source IP:                192.168.1.21
+Destination IP:           142.251.36.100
+TTL:                      64
+ICMPv4 Type:              8
+ICMPv4 Code:              0
 
+0x0000: 64 fd 96 92 fb 72 14 5a fc 50 b8 4f 08 00 45 00  d....r.Z .P.O..E.
+0x0010: 00 54 a2 61 40 00 40 01 23 2b c0 a8 01 15 8e fb  .T.a@.@. #+......
+0x0020: 24 64 08 00 f0 01 b1 4b 00 01 14 52 25 66 00 00  $d.....K ...R%f..
+0x0030: 00 00 5b 26 03 00 00 00 00 00 10 11 12 13 14 15  ..[&.... ........
+0x0040: 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25  ........ .. !"#$%
+0x0050: 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35  &'()*+,- ./012345
+0x0060: 36 37                                            67
+
+```
+
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --icmp6
+==========================================================================
+Timestamp:                2024-04-21T17:53:16.746238+00:00
+Source MAC:               62:16:f3:b0:24:af
+Destination MAC:          00:1a:2b:3c:4d:5e
+Frame Length:             62 bytes
+Source IP:                fdeb:446c:912d:8da::
+Destination IP:           2001:db8::1
+ICMPv6 Type:              128
+ICMPv6 Code:              0
+
+0x0000: 00 1a 2b 3c 4d 5e 62 16 f3 b0 24 af 86 dd 60 00  ..+<M^b. ..$...`.
+0x0010: 00 00 00 08 3a 40 fd eb 44 6c 91 2d 08 da 00 00  ....:@.. Dl.-....
+0x0020: 00 00 00 00 00 00 20 01 0d b8 00 00 00 00 00 00  ...... . ........
+0x0030: 00 00 00 00 00 01 80 00 75 a3 00 00 00 00        ........ u.....
+```
 
 **Note** Sniffer is able to sniff ICMPv4 and ICMPv6 packet.
 
 #### Internet Group Management Protocol (IGMP)
 The Internet Group Management Protocol (IGMP) is a network layer protocol used primarily in IPv4 networks to facilitate the management of multicast groups. IGMP allows multiple devices to share a single IP address designated for multicasting, enabling them to receive the same data simultaneously. IGMP operates by allowing devices on a network to communicate their interest in joining or leaving multicast groups. Routers supporting IGMP listen to these transmissions to maintain a record of which devices are members of specific multicast groups. Multicast IP addresses, which range from 224.0.0.0 to 239.255.255.255, are used exclusively for these groups. When data is sent to a multicast group, the router replicates the packets and distributes them to all members of the group.[6]
 
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --igmp
+==========================================================================
+Timestamp:                2024-04-21T17:50:03.465119+00:00
+Source MAC:               14:5a:fc:50:b8:4f
+Destination MAC:          01:00:5e:00:00:fb
+Frame Length:             46 bytes
+Source IP:                192.168.1.21
+Destination IP:           224.0.0.251
+TTL:                      1
+IGMP Type:                22
+IGMP Max Resp Time:       0
+IGMP Group Address:       224.0.0.251
+
+0x0000: 01 00 5e 00 00 fb 14 5a fc 50 b8 4f 08 00 46 c0  ..^....Z .P.O..F.
+0x0010: 00 20 00 00 40 00 01 02 41 5f c0 a8 01 15 e0 00  . ..@... A_......
+0x0020: 00 fb 94 04 00 00 16 00 09 04 e0 00 00 fb        ........ ......
+```
+
 #### Address Resolution Protocol (ARP)
 The Address Resolution Protocol (ARP) is a fundamental protocol used in local area networks (LANs) to associate the dynamic Internet Protocol (IP) addresses with the fixed physical machine addresses, or Media Access Control (MAC) addresses. This association is essential because IP addresses (used in the network layer) and MAC addresses (used in the data link layer) differ in format and function. ARP operates by translating the 32-bit IP address (commonly IPv4) into a 48-bit MAC address and vice versa, allowing devices on a network to identify and communicate with each other effectively. When a device on a LAN needs to communicate with another device, it uses ARP to find the MAC address associated with the intended IP address.[7]
+
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --arp
+==========================================================================
+Timestamp:                2024-04-21T17:54:05.283216+00:00
+Source MAC:               64:fd:96:92:fb:72
+Destination MAC:          14:5a:fc:50:b8:4f
+Frame Length:             52 bytes
+Sender MAC:               64:fd:96:92:fb:72
+Sender IP:                192.168.1.1
+Target MAC:               00:00:00:00:00:00
+Target IP:                192.168.1.21
+
+0x0000: 14 5a fc 50 b8 4f 64 fd 96 92 fb 72 08 06 00 01  .Z.P.Od. ...r....
+0x0010: 08 00 06 04 00 01 64 fd 96 92 fb 72 c0 a8 01 01  ......d. ...r....
+0x0020: 00 00 00 00 00 00 c0 a8 01 15 00 00 00 00 00 00  ........ ........
+0x0030: 00 00 00 00                                      ....
+```
 
 #### Neighbor Discovery Protocol (NDP)
 The Neighbor Discovery Protocol (NDP) is a crucial protocol used with IPv6, functioning at Layer 2 (Data Link Layer) of the OSI model. NDP performs several key tasks essential for efficient and consistent data transmission across IPv6 networks. These tasks include stateless address autoconfiguration, address resolution, Neighbor Unreachability Detection (NUD), and Duplicate Address Detection (DAD). NDP replaces the Address Resolution Protocol (ARP) used in IPv4, adapting these functions to the IPv6 environment.[8]
 
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --ndp
+==========================================================================
+Timestamp:                2024-04-21T17:54:53.819901+00:00
+Source MAC:               7c:24:99:f2:cb:05
+Destination MAC:          33:33:ff:cf:57:b9
+Frame Length:             86 bytes
+Source IP:                fe80::101c:7ef8:7f29:3421
+Destination IP:           ff02::1:ffcf:57b9
+ICMPv6 Type:              135
+ICMPv6 Code:              0
+ICMPv6 Subtype:           NDP - Neighbor Solicitation
+
+0x0000: 33 33 ff cf 57 b9 7c 24 99 f2 cb 05 86 dd 60 00  33..W.|$ ......`.
+0x0010: 00 00 00 20 3a ff fe 80 00 00 00 00 00 00 10 1c  ... :... ........
+0x0020: 7e f8 7f 29 34 21 ff 02 00 00 00 00 00 00 00 00  ~..)4!.. ........
+0x0030: 00 01 ff cf 57 b9 87 00 ce 1f 00 00 00 00 fe 80  ....W... ........
+0x0040: 00 00 00 00 00 00 18 d0 56 20 6b cf 57 b9 01 01  ........ V k.W...
+0x0050: 7c 24 99 f2 cb 05                                |$....
+```
+
 #### Multicast Listener Discovery Protocol (MLD)
 IPv6 Multicast Listener Discovery (MLD) is a protocol used by IPv6 devices to identify and manage the presence of multicast listeners on a network. These listeners are nodes interested in receiving multicast packets addressed to specific multicast groups. MLD is integral to the efficient operation of IPv6 multicast routing and is implemented in two versions: MLD version 1 and MLD version 2, based on IGMP versions for IPv4. MLDv1 corresponds to IGMPv2 for IPv4 and is used for basic multicast listener functions. MLDv2 is based on IGMPv3, that supports more advanced features such as source filtering, allowing nodes to specify which sources they are interested in receiving multicast data from.[9]
 
+```
+ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --mld
+==========================================================================
+Timestamp:                2024-04-21T17:55:25.799535+00:00
+Source MAC:               14:5a:fc:50:b8:4f
+Destination MAC:          33:33:00:00:00:16
+Frame Length:             62 bytes
+Source IP:                2001:db8:85a3::8a2e:370:7334
+Destination IP:           ff02::16
+ICMPv6 Type:              143
+ICMPv6 Code:              0
+ICMPv6 Subtype:           MLDv2 - Report
 
-
+0x0000: 33 33 00 00 00 16 14 5a fc 50 b8 4f 86 dd 60 00  33.....Z .P.O..`.
+0x0010: 00 00 00 08 3a 01 20 01 0d b8 85 a3 00 00 00 00  ....:. . ........
+0x0020: 8a 2e 03 70 73 34 ff 02 00 00 00 00 00 00 00 00  ...ps4.. ........
+0x0030: 00 00 00 00 00 16 8f 00 bd 74 00 00 00 00        ........ .t....
+```
 
 ## Resources 
 [1] "What is a packet? | Network packet definition" [online]. [cited 2024-04-21]. Available at [https://www.cloudflare.com/learning/network-layer/what-is-a-packet/](https://www.cloudflare.com/learning/network-layer/what-is-a-packet/)
