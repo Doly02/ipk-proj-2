@@ -11,6 +11,18 @@ The goal of this second project in the subject of communication and site was to 
 - [Project organization](#project-organization)
 - [Required theory](#required-theory)
     - [Packets](#packets)
+    - [Why we use packets?](#why-we-use-packets)
+    - [Transmission Control Protocol (TCP)](#transmission-control-protocol-tcp)
+    - [User Datagram Protocol (UDP)](#user-datagram-protocol-udp)
+    - [Internet Control Message Protocol (ICMP)](#internet-control-message-protocol-icmp)
+    - [Internet Group Management Protocol (IGMP)](#internet-group-management-protocol-igmp)
+    - [Address Resolution Protocol (ARP)](#address-resolution-protocol-arp)
+    - [Neighbor Discovery Protocol (NDP)](#neighbor-discovery-protocol-ndp)
+    - [Multicast Listener Discovery Protocol (MLD)](#multicast-listener-discovery-protocol-mld)
+- [Testing](#testing)
+    - [Manual Testing](#manual-testing)
+    - [Automated Testing](#automated-testing)
+    - [Wireshark](#wireshark)
 - [Resources](#resources)
 
 ## Requirements
@@ -22,9 +34,9 @@ To build and run `ipk-sniffer`, you will need the following:
 ### Libraries
 - **Google Test (gtest)**: Required for compiling and running the unit tests. Ensure you have Google Test installed on your system as it uses `-lgtest -lgtest_main -pthread` flags for linking.
 
-- **python scapy**: Scapy is a packet manipulation tool for computer networks. Library is required for run `python3` script which checks that all packet subsets that need to be captured are captured by the sniffer.
+- **Python Scapy**: Scapy is a packet manipulation tool for computer networks. Library is required for run `python3` script which checks that all packet subsets that need to be captured are captured by the sniffer.  
 
-The `Scapy` Library can be installed on Ubuntu by command:
+The `Scapy` library can be installed on Ubuntu by command:
 `pip install scapy`
 
 ### Build tools
@@ -69,22 +81,22 @@ ipk-proj-1/
 
 ## Required theory
 In order to use the program correctly and to understand its output, it is necessary to have a certain base of knowledge in your head, which is described in this chapter.
-The chapter also contains examples of the program.
+The chapter also contains examples of the program output for specific protocol.
 
 ### Packets  
 In networking, a packet is a small segment of data divided from a larger message, suitable for transmission over computer networks like the Internet. This method allows for the reassembly of the original message by the receiving device. Using packets enables the internet to function as a packet-switching network, where data can be sent in small pieces that travel independently over various paths. [1]
 
-Each packet includes a header and a payload. The header provides essential information such as the packet's origin, destination, and sequence, which helps the receiving device process and reorder the packets correctly. Beyond headers, packets can also have trailers or footers, added by specific network protocols, that contain additional data about the packet.[2]
+Each packet includes a header and a payload. The header provides essential information such as the packet's origin, destination, and sequence, which helps the receiving device process and reorder the packets correctly. Beyond headers, packets can also have trailers or footers, added by specific network protocols, that contain additional data about the packet. [2]
 
 ### Sniffed packet types
 
 #### Why we use packets?
-In Network do not use just one packet type but use multiple packet types to accommodate different types of data and optimize network performance. By using multiple packet types, the network can tailor packet handling and processing specifically to the needs of different types of data.[3]
+In Network do not use just one packet type but use multiple packet types to accommodate different types of data and optimize network performance. By using multiple packet types, the network can tailor packet handling and processing specifically to the needs of different types of data. [3]
 
 Another reason for using multiple packet types is to support various communication patterns, such as TCP vs UDP, single flow vs multiple flows, and different container networking technologies, such as those found in Windows and Linux. Futhermore security is also one of the reasons for using multiple packet types. Using multiple packet types in a network offers several benefits.
 
 #### Transmission Control Protocol (TCP)
-Transmission Control Protocol (TCP) is a foundational technology for the Internet, characterized as a connection-oriented protocol. It facilitates reliable data transmission between devices and applications across networks by ensuring data delivery is verified. TCP is preferred for its reliability in ensuring complete and accurate data transfer. However, this reliability comes with higher bandwidth consumption due to its extensive feedback and error-handling mechanisms.[4]
+Transmission Control Protocol (TCP) is a foundational technology for the Internet, characterized as a connection-oriented protocol. It facilitates reliable data transmission between devices and applications across networks by ensuring data delivery is verified. TCP is preferred for its reliability in ensuring complete and accurate data transfer. However, this reliability comes with higher bandwidth consumption due to its extensive feedback and error-handling mechanisms. [4]
 
 TCP is used for loading web pages via HTTP (Hypertext Transfer Protocol) and HTTPS (HTTP Secure). Protocols such as SMTP (Simple Mail Transfer Protocol) for sending emails, POP (Post Office Protocol) and IMAP (Internet Message Access Protocol) for retrieving emails, rely on TCP to ensure messages are sent and received without errors. Also another protocols like FTP (File Transfer Protocol), SFTP (SSH File Transfer Protocol), SLL (Secure Sockets Layer), etc.
 
@@ -113,7 +125,7 @@ Window Size:              27
 ```
 
 #### User Datagram Protocol (UDP)
-User Datagram Protocol (UDP) is a communication protocol that facilitates the transmission of data across networks without establishing a connection or verifying the delivery of data. It is often referred to as a "connectionless" or "fire-and-forget" protocol because it sends data without ensuring that it reaches the recipient. This trait makes UDP particularly suitable for real-time applications where speed is more critical than reliability.[4]
+User Datagram Protocol (UDP) is a communication protocol that facilitates the transmission of data across networks without establishing a connection or verifying the delivery of data. It is often referred to as a "connectionless" or "fire-and-forget" protocol because it sends data without ensuring that it reaches the recipient. This trait makes UDP particularly suitable for real-time applications where speed is more critical than reliability. [4]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --udp
@@ -139,7 +151,7 @@ UDP Length:               65 bytes
 ```
 
 #### Internet Control Message Protocol (ICMP)
-The Internet Control Message Protocol (ICMP) is a network layer protocol that plays a crucial role in diagnosing and reporting network communication issues. It is widely used by network devices like routers to ensure data is reaching its intended destination efficiently and to handle errors in network communications. ICMP does not establish a connection before sending messages.[5]
+The Internet Control Message Protocol (ICMP) is a network layer protocol that plays a crucial role in diagnosing and reporting network communication issues. It is widely used by network devices like routers to ensure data is reaching its intended destination efficiently and to handle errors in network communications. ICMP does not establish a connection before sending messages. [5]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --icmp4
@@ -185,7 +197,7 @@ ICMPv6 Code:              0
 **Note:** Sniffer is able to sniff ICMPv4 and ICMPv6 packet.
 
 #### Internet Group Management Protocol (IGMP)
-The Internet Group Management Protocol (IGMP) is a network layer protocol used primarily in IPv4 networks to facilitate the management of multicast groups. IGMP allows multiple devices to share a single IP address designated for multicasting, enabling them to receive the same data simultaneously. IGMP operates by allowing devices on a network to communicate their interest in joining or leaving multicast groups. Routers supporting IGMP listen to these transmissions to maintain a record of which devices are members of specific multicast groups. Multicast IP addresses, which range from 224.0.0.0 to 239.255.255.255, are used exclusively for these groups. When data is sent to a multicast group, the router replicates the packets and distributes them to all members of the group.[6]
+The Internet Group Management Protocol (IGMP) is a network layer protocol used primarily in IPv4 networks to facilitate the management of multicast groups. IGMP allows multiple devices to share a single IP address designated for multicasting, enabling them to receive the same data simultaneously. IGMP operates by allowing devices on a network to communicate their interest in joining or leaving multicast groups. Routers supporting IGMP listen to these transmissions to maintain a record of which devices are members of specific multicast groups. Multicast IP addresses, which range from 224.0.0.0 to 239.255.255.255, are used exclusively for these groups. When data is sent to a multicast group, the router replicates the packets and distributes them to all members of the group. [6]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --igmp
@@ -207,7 +219,7 @@ IGMP Group Address:       224.0.0.251
 ```
 
 #### Address Resolution Protocol (ARP)
-The Address Resolution Protocol (ARP) is a fundamental protocol used in local area networks (LANs) to associate the dynamic Internet Protocol (IP) addresses with the fixed physical machine addresses, or Media Access Control (MAC) addresses. This association is essential because IP addresses (used in the network layer) and MAC addresses (used in the data link layer) differ in format and function. ARP operates by translating the 32-bit IP address (commonly IPv4) into a 48-bit MAC address and vice versa, allowing devices on a network to identify and communicate with each other effectively. When a device on a LAN needs to communicate with another device, it uses ARP to find the MAC address associated with the intended IP address.[7]
+The Address Resolution Protocol (ARP) is a fundamental protocol used in local area networks (LANs) to associate the dynamic Internet Protocol (IP) addresses with the fixed physical machine addresses, or Media Access Control (MAC) addresses. This association is essential because IP addresses (used in the network layer) and MAC addresses (used in the data link layer) differ in format and function. ARP operates by translating the 32-bit IP address (commonly IPv4) into a 48-bit MAC address and vice versa, allowing devices on a network to identify and communicate with each other effectively. When a device on a LAN needs to communicate with another device, it uses ARP to find the MAC address associated with the intended IP address. [7]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --arp
@@ -228,7 +240,7 @@ Target IP:                192.168.1.21
 ```
 
 #### Neighbor Discovery Protocol (NDP)
-The Neighbor Discovery Protocol (NDP) is a crucial protocol used with IPv6, functioning at Layer 2 (Data Link Layer) of the OSI model. NDP performs several key tasks essential for efficient and consistent data transmission across IPv6 networks. These tasks include stateless address autoconfiguration, address resolution, Neighbor Unreachability Detection (NUD), and Duplicate Address Detection (DAD). NDP replaces the Address Resolution Protocol (ARP) used in IPv4, adapting these functions to the IPv6 environment.[8]
+The Neighbor Discovery Protocol (NDP) is a crucial protocol used with IPv6, functioning at Layer 2 (Data Link Layer) of the OSI model. NDP performs several key tasks essential for efficient and consistent data transmission across IPv6 networks. These tasks include stateless address autoconfiguration, address resolution, Neighbor Unreachability Detection (NUD), and Duplicate Address Detection (DAD). NDP replaces the Address Resolution Protocol (ARP) used in IPv4, adapting these functions to the IPv6 environment. [8]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --ndp
@@ -252,7 +264,7 @@ ICMPv6 Subtype:           NDP - Neighbor Solicitation
 ```
 
 #### Multicast Listener Discovery Protocol (MLD)
-IPv6 Multicast Listener Discovery (MLD) is a protocol used by IPv6 devices to identify and manage the presence of multicast listeners on a network. These listeners are nodes interested in receiving multicast packets addressed to specific multicast groups. MLD is integral to the efficient operation of IPv6 multicast routing and is implemented in two versions: MLD version 1 and MLD version 2, based on IGMP versions for IPv4. MLDv1 corresponds to IGMPv2 for IPv4 and is used for basic multicast listener functions. MLDv2 is based on IGMPv3, that supports more advanced features such as source filtering, allowing nodes to specify which sources they are interested in receiving multicast data from.[9]
+IPv6 Multicast Listener Discovery (MLD) is a protocol used by IPv6 devices to identify and manage the presence of multicast listeners on a network. These listeners are nodes interested in receiving multicast packets addressed to specific multicast groups. MLD is integral to the efficient operation of IPv6 multicast routing and is implemented in two versions: MLD version 1 and MLD version 2, based on IGMP versions for IPv4. MLDv1 corresponds to IGMPv2 for IPv4 and is used for basic multicast listener functions. MLDv2 is based on IGMPv3, that supports more advanced features such as source filtering, allowing nodes to specify which sources they are interested in receiving multicast data from. [9]
 
 ```
 ipk@ipk:~/ipk-proj-2$~/ipk-proj-2$ sudo ./ipk-sniffer -i wlp4s0 --mld
@@ -280,62 +292,95 @@ The correct functionality and behaviour of ipk-sniffer has been tested in a numb
 The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
 
 #### Transmission Control Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`  
-*Terminal 2.* Sends TCP packet from port 5200  
-*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`.  
+*Terminal 2.* Sends TCP packet from port 5200.  
+*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*.  
   
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`  
-*Terminal 2.* Sends TCP packet to port 5200  
-*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`.  
+*Terminal 2.* Sends TCP packet to port 5200.  
+*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*.  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`  
-*Terminal 2.* Sends TCP packet to/from port 5200  
-*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`.  
+*Terminal 2.* Sends TCP packet to/from port 5200.  
+*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*.  
 
 #### User Datagram Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`  
-*Terminal 2.* Sends UDP packet from port 5200  
-*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`.  
+*Terminal 2.* Sends UDP packet from port 5200.  
+*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*.  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`  
-*Terminal 2.* Sends UDP packet to port 5200  
-*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`.  
+*Terminal 2.* Sends UDP packet to port 5200.  
+*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*.  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`  
-*Terminal 2.* Sends UDP packet to/from port 5200  
-*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`.  
+*Terminal 2.* Sends UDP packet to/from port 5200.  
+*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*.  
 
 #### Multicast Listener Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`  
-*Terminal 2.* Sends MLDv1 Query packet  
-*Expected outcome* Sniffed MLDv2 Query packet in *Terminal 1*  
-
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`  
-*Terminal 2.* Sends `MLDv1 Report` packet  
-*Expected outcome* Sniffed `MLDv1 Report` packet in *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`.  
+*Terminal 2.* Sends `MLDv1 Query` packet.  
+*Expected outcome* Sniffed `MLDv2 Query` packet in *Terminal 1*.  
+**Note:** Also other MLD packets were tested as well (e.g.`MLDv1 Report`, `MLDv1 Done`,`MLDv2 Report`).
 
 #### Neighbor Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`  
-*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet  
-*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*  
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --ndp`.  
+*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet.  
+*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*.  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`    
-*Terminal 2.* Sends `ICMPv6 Neighbor Solicitation` packet  
-*Expected outcome* Sniffed `ICMPv6 Neighbor Solicitation` packet in *Terminal 1*  
+**Note:** Also other NDP packets were tested as well (e.g.`ICMPv6 Router Advertisement`, `ICMPv6 Neighbor Solicitation` and `CMPv6 Neighbor Advertisement`).
 
-**Note:** Also other NDP packet was tested as well (e.g.`ICMPv6 Router Advertisement`and `CMPv6 Neighbor Advertisement`)
+#### Address Resolution Protocol Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --arp`.  
+*Terminal 2.* Sends `ARP Request` packet.  
+*Expected outcome* Sniffed `ARP Request` packet in *Terminal 1*.  
+**Note:** Also other ARP packet was tested as well (e.g.`ARP Reply`).
 
+#### Internet Control Message Protocol v4 Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp4`.  
+*Terminal 2.* Sends `ICMPv4 Echo Reply` packet.  
+*Expected outcome* Sniffed `ICMPv4 Echo Reply` packet in *Terminal 1*.  
+**Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv4 Echo Request`).
 
+#### Internet Control Message Protocol v6 Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.  
+*Terminal 2.* Sends `ICMPv6 Echo Request` packet.  
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.  
+**Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv6 Echo Reply`).
 
+#### Internet Control Message Protocol v6 Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.  
+*Terminal 2.* Sends `ICMPv6 Echo Request` packet.  
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.  
+**Note:** Also other ICMPv6 packet was tested as well (e.g.`ICMPv6 Echo Reply`), it's also possible during the actual use it is possible to sniff also MLD and NDL packets, as they are subtypes.
 
+#### Internet Group Message Protocol v6 Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --igmp`  
+*Terminal 2.* Sends `IGMP Query` packet  
+*Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*  
+**Note:** Also other ICMPv6 packet was tested as well (e.g.`IGMP Report`,`IGMP Leave Group`)  
 
+The manual tests were performed on the virtual interface `virt0`, it was chosen as the test interface because of the network traffic, if the `wlp4s0`  environment was used, there would be a high probability that the captured packet would not be the right one.
 
+### Automated Testing
+Automatic tests are an extension of manual tests, i.e. they perform the same tests and at the same time extend them, thanks to automation it was possible to expose the program to tests with a large number of captured packets, some of the test scenarios are described below.
 
-**Note:** Test prerequisity for all test scenarios running ipk-sniffer in *Terminal 2.*
+#### Sniff 100 of Packets of Same Group Test Scenarios
+*Test Case:* Runs `ipk-sniffer` with option `-i wlp4s0 --group -n 100`, where packet `group` can be `tcp`,`udp`,`ndp`,`icmp4`,`icmp6`,`igmp`.  
+*Expected Output:* Sniffed 100 packets of specific packet groups.  
 
-### Automatic Tests
+#### Combinations of Sniffed Packets Test Scenarios
+*Test Case:* Runs `ipk-sniffer` with option `-i wlp4s0 --group1 --group2`, where packet `group1` and `group2` can be mixture of `tcp`,`udp`,`ndp`,`icmp4`,`icmp6`,`igmp`.   
+*Expected Output:* Sniffed packet of are from `group1` or `group2`.  
+
+**Note:** As another test cases were combinations of multiple packet groups and the sniffed packets were expected to be found from the groups defined in the program arguments (e.g. `./ipk-sniffer -i wlp4s0 --tcp --ndp -igmp -icmp4` -> expected packets from groups: `tcp`,`ndp`,`icmp4`,`igmp`).  
+
+#### Packets Sent By the Script Test Scenario
+*Test Case:* Packets sent with a certain source and destination address and a fixed payload.  
+*Expected Output:* Captured packets with only the expected source and destination addresses. Tested on the interface `virt0` and `wlp4s0`.  
 
 ### Wireshark 
+To verify the displayed packet information and packet display, the program was also verified using Wireshark.
 
 ### Tested Enviroment 
 Testing was processed on Ubuntu 22.04, Reference Ubuntu Virtual Machine And Ubuntu with Nix Enviroment. Settings of Ubuntu VM and Nix Enviroment is described [here](https://git.fit.vutbr.cz/NESFIT/IPK-Projects-2024/src/branch/master).
