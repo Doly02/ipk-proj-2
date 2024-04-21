@@ -69,7 +69,7 @@ std::string Sniffer::createPadding(int size) {
 void Sniffer::processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header) {
     //const struct ip6_hdr *ip6 = (struct ip6_hdr *)(packet + sizeof(struct ether_header));
     const struct icmp6_hdr *icmp6 = (struct icmp6_hdr *)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
-    printf("ICMP6 type: %d\n", icmp6->icmp6_type);
+    //printf("ICMP6 type: %d\n", icmp6->icmp6_type);
     if (icmp6->icmp6_type == 130 || icmp6->icmp6_type == 131 || icmp6->icmp6_type == 132 || icmp6->icmp6_type == 143) {
         std::cout << "MLD message detected, type: " << static_cast<int>(icmp6->icmp6_type) << std::endl;
         //actNumMldPackets++;
@@ -88,7 +88,7 @@ void Sniffer::processMLDPacket(const u_char *packet, const struct pcap_pkthdr *h
 */
 void Sniffer::setupDevice() {
     // Open Device for Packet Capture With Set Buffer Size And With TimeOut
-    printf("Interface: %s\n", interfaceName.c_str());
+    //printf("Interface: %s\n", interfaceName.c_str());
     deviceHandle = pcap_open_live(interfaceName.c_str(), BUFSIZ, 1, 1000, errbuf);
     if (deviceHandle == nullptr) {
         throw std::runtime_error("pcap_open_live failed: " + std::string(errbuf));  // If Fails Throw Exception
@@ -104,7 +104,7 @@ void Sniffer::applyFilter() {
     struct bpf_program fp;  // Struct For Compiled Filter
     bpf_u_int32 net = 0;    // 'net' Used In Case When Net Is Not Needed
 
-    printf("Filter: %s\n", filterExpression.c_str());
+    //printf("Filter: %s\n", filterExpression.c_str());
     // Compile The Filter For Device
     if (pcap_compile(deviceHandle, &fp, filterExpression.c_str(), 0, net) == -1) {
         throw std::runtime_error("pcap_compile failed: " + std::string(pcap_geterr(deviceHandle)));
@@ -134,25 +134,25 @@ void Sniffer::startCapture() {
 
 void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header) {
     struct ether_header *eth_header = (struct ether_header *)packet;
-    std::cout << "=========================================================================" << std::endl;
-    std::cout << "timestamp: "      << createPadding(15) << formatTimestamp(header->ts) << std::endl;
-    std::cout << "src MAC: "        << createPadding(17) << formatMac(eth_header->ether_shost) << std::endl;
-    std::cout << "dst MAC: "        << createPadding(17) << formatMac(eth_header->ether_dhost) << std::endl;
-    std::cout << "frame length: "   << createPadding(12) << header->len << " bytes" << std::endl;
+    std::cout << "==========================================================================" << std::endl;
+    std::cout << "Timestamp: "          << createPadding(15) << formatTimestamp(header->ts) << std::endl;
+    std::cout << "Source MAC: "         << createPadding(14) << formatMac(eth_header->ether_shost) << std::endl;
+    std::cout << "Destination MAC: "    << createPadding(9) << formatMac(eth_header->ether_dhost) << std::endl;
+    std::cout << "Frame Length: "       << createPadding(12) << header->len << " bytes" << std::endl;
 
     // Check If Packet Is ARP
     if (ntohs(eth_header->ether_type) == ETHERTYPE_ARP) {
         struct ether_arp *arp_hdr = (struct ether_arp *)(packet + sizeof(struct ether_header));
-        std::cout << "Sender MAC: " << createPadding(14) << formatMac(arp_hdr->arp_sha) << std::endl;
-        std::cout << "Sender IP: "  << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
-        std::cout << "Target MAC: " << createPadding(14) << formatMac(arp_hdr->arp_tha) << std::endl;
-        std::cout << "Target IP: "  << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
+        std::cout << "Sender MAC: "     << createPadding(14) << formatMac(arp_hdr->arp_sha) << std::endl;
+        std::cout << "Sender IP: "      << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_spa)) << std::endl;
+        std::cout << "Target MAC: "     << createPadding(14) << formatMac(arp_hdr->arp_tha) << std::endl;
+        std::cout << "Target IP: "      << createPadding(15) << inet_ntoa(*((struct in_addr *)arp_hdr->arp_tpa)) << std::endl;
     } 
     else if (ntohs(eth_header->ether_type) == ETHERTYPE_IP) {
         struct ip *ip_hdr = (struct ip *)(packet + sizeof(struct ether_header));
-        std::cout << "src IP: " << createPadding(18) << formatIp(ip_hdr->ip_src) << std::endl;
-        std::cout << "dst IP: " << createPadding(18) << formatIp(ip_hdr->ip_dst) << std::endl;
-        std::cout << "TTL: "    << createPadding(21) << static_cast<int>(ip_hdr->ip_ttl) << std::endl;
+        std::cout << "Source IP: "      << createPadding(15) << formatIp(ip_hdr->ip_src) << std::endl;
+        std::cout << "Destination IP: " << createPadding(10) << formatIp(ip_hdr->ip_dst) << std::endl;
+        std::cout << "TTL: "            << createPadding(21) << static_cast<int>(ip_hdr->ip_ttl) << std::endl;
 
         switch (ip_hdr->ip_p) {
             case IPPROTO_TCP: {
@@ -162,10 +162,10 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct tcphdr *tcp_hdr = (struct tcphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Prints the Source Port That Identifies the Application on the Sending Host. Ports Allow Multiplexing of TCP Communication on a Single Host
-                std::cout << "src port: "               << createPadding(16) << ntohs(tcp_hdr->th_sport) << std::endl;
+                std::cout << "Source Port: "            << createPadding(13) << ntohs(tcp_hdr->th_sport) << std::endl;
                 
                 // Prints the Destination Port, Which Identifies the Target Application on the Receiving Host. 
-                std::cout << "dst port: "               << createPadding(16) << ntohs(tcp_hdr->th_dport) << std::endl;
+                std::cout << "Destination port: "       << createPadding(8) << ntohs(tcp_hdr->th_dport) << std::endl;
                 std::cout << "Sequence Number: "        << createPadding(9) << ntohl(tcp_hdr->th_seq) << std::endl;
                 std::cout << "Acknowledgment Number: "  << createPadding(3) << ntohl(tcp_hdr->th_ack) << std::endl;
                 std::cout << "Flags: "                  << createPadding(19) << std::bitset<8>(tcp_hdr->th_flags) << std::endl;
@@ -179,13 +179,13 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct udphdr *udp_hdr = (struct udphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Prints the Source Port of the UDP Packet (Ports are Used to Address Specific Applications or Services on the Host)
-                std::cout << "src port: "               << createPadding(16) << ntohs(udp_hdr->uh_sport) << std::endl;
+                std::cout << "Source Port: "            << createPadding(13) << ntohs(udp_hdr->uh_sport) << std::endl;
                 
                 // Destination Port Identifies the Application or Service on the Target Host
-                std::cout << "dst port: "               << createPadding(16) << ntohs(udp_hdr->uh_dport) << std::endl;
+                std::cout << "Destination Port: "       << createPadding(8) << ntohs(udp_hdr->uh_dport) << std::endl;
 
                 // UDP Length - The Total Length of the UDP Header and Data, Which is Important for Understanding the Size of the Data Being Transferred.
-                std::cout << "UDP length: "             << createPadding(14) << ntohs(udp_hdr->uh_ulen) << " bytes" << std::endl;
+                std::cout << "UDP Length: "             << createPadding(14) << ntohs(udp_hdr->uh_ulen) << " bytes" << std::endl;
                 break;
             }
             case IPPROTO_ICMP: {
@@ -193,11 +193,11 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct icmphdr *icmp_hdr = (struct icmphdr *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Type of ICMP Message (e.g. Echo Request [8], Echo Reply [0], Destination Unreachable [3],.. -> Identifies What Message Signalizes)
-                std::cout << "ICMPv4 type: "              << createPadding(13) << static_cast<int>(icmp_hdr->type) << std::endl;
+                std::cout << "ICMPv4 Type: "              << createPadding(13) << static_cast<int>(icmp_hdr->type) << std::endl;
                 
                 // Information About What Caused the ICMP message - For Type 3 (Destination Unreachable), 
                 // the Code Specifies the Reason Why the Destination is Unreachable, such as 'Port Unreachable' (code 3) or 'Network Unreachable' (code 0)
-                std::cout << "ICMPv4 code: "              << createPadding(13) << static_cast<int>(icmp_hdr->code) << std::endl;
+                std::cout << "ICMPv4 Code: "              << createPadding(13) << static_cast<int>(icmp_hdr->code) << std::endl;
                 break;
             }
             case IPPROTO_IGMP: {
@@ -205,13 +205,13 @@ void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header
                 struct igmp *igmp_hdr = (struct igmp *)((u_char *)ip_hdr + (ip_hdr->ip_hl << 2));
                 
                 // Type of Typ IGMP Message (e.g. Query, Report)
-                std::cout << "IGMP type: "              << createPadding(15) << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
+                std::cout << "IGMP Type: "              << createPadding(15) << static_cast<unsigned>(igmp_hdr->igmp_type) << std::endl;
                 
                 // Max Response Time (Used in IGMP Query)
-                std::cout << "IGMP max resp time: "     << createPadding(6) << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
+                std::cout << "IGMP Max Resp Time: "     << createPadding(6) << static_cast<unsigned>(igmp_hdr->igmp_code) << std::endl;
                 
                 // Target Group Adress For IGMP Message
-                std::cout << "IGMP group address: "     << createPadding(6) << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
+                std::cout << "IGMP Group Address: "     << createPadding(6) << inet_ntoa(igmp_hdr->igmp_group) << std::endl;
                 break;                
             }
         }
