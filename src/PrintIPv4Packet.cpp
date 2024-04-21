@@ -68,6 +68,12 @@ std::string Sniffer::formatHex(const u_char *data, size_t length) {
 
         // Add Space Between Bytes
         stream << " ";
+
+        // Space Between 8th and 9th Byte In ASCII Reprezentation
+        if ((i + 1) % bytes_per_line == 8) {
+            ascii += " "; 
+        }
+
     }
 
     // Fill The Other Part of Line If Line Does Not Includes 16 Bytes
@@ -81,4 +87,3 @@ std::string Sniffer::formatHex(const u_char *data, size_t length) {
 
     return stream.str();
 }
-    

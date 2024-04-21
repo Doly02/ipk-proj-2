@@ -36,8 +36,8 @@ void Sniffer::processIPv6Packet(const uint8_t *packet) {
     inet_ntop(AF_INET6, &ip6_hdr->ip6_dst, dst_ip, INET6_ADDRSTRLEN);
 
     // Výpis zdrojové a cílové adresy
-    std::cout << "src IP: " << createPadding(18) << src_ip << std::endl;
-    std::cout << "dst IP: " << createPadding(18) << dst_ip << std::endl;
+    std::cout << "Source IP: " << createPadding(15) << src_ip << std::endl;
+    std::cout << "Destination IP: " << createPadding(10) << dst_ip << std::endl;
 
     // Zpracování další hlavičky dle typu
     int next_header = ip6_hdr->ip6_nxt;
@@ -48,12 +48,12 @@ void Sniffer::processIPv6Packet(const uint8_t *packet) {
             {
                 // Specifies the ICMPv6 Message Type (e.g. 128] Echo Request -> echo request, used in ping, [129] Echo Reply -> echo reply, used in ping
                 // [134] Router Advertisement, [135] Neighbor Solicitation, [136] Neighbor Advertisement)
-                std::cout << "ICMPv6 type: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
+                std::cout << "ICMPv6 Type: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_type) << std::endl;
                 // Provides Additional Context or Specification for the ICMPv6 Message Type
                 // The Code Specifies the Reason or Manner in Which the Message was Generated, Depending on the Message Type
                 // (e.g. For Type [1] -> Different Codes Can Indicate Different Reasons Why the Destination is Unreachable, Such as:
                 // Code 0: no Route to the Destination, Code 1: Communication With the Destination Administratively )
-                std::cout << "ICMPv6 code: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
+                std::cout << "ICMPv6 Code: " << createPadding(13) << static_cast<int>(icmp6_hdr->icmp6_code) << std::endl;
                 // Print MLD Type if Packet Is Subtype of MLD
                 processMLDMessage(icmp6_hdr);
                 processNDPMessage(icmp6_hdr);
