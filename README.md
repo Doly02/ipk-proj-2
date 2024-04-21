@@ -292,33 +292,33 @@ The correct functionality and behaviour of ipk-sniffer has been tested in a numb
 The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
 
 #### Transmission Control Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --source-port 5200 --tcp/-t`.<br>
 *Terminal 2.* Sends TCP packet from port 5200.<br>
 *Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*.<br>
   
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --destination-port 5200 --tcp/-t`.<br>
 *Terminal 2.* Sends TCP packet to port 5200.<br>
 *Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --port/-p 5200 --tcp/-t`.<br>
 *Terminal 2.* Sends TCP packet to/from port 5200.<br>
 *Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*.<br>
 
 #### User Datagram Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --source-port 5200 --udp/-u`.<br>
 *Terminal 2.* Sends UDP packet from port 5200.<br>
 *Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --destination-port 5200 --udp/-u`.<br>
 *Terminal 2.* Sends UDP packet to port 5200.<br>
 *Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --port/-p 5200 --udp/-u`.<br>
 *Terminal 2.* Sends UDP packet to/from port 5200.<br>
 *Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*.<br>
 
 #### Multicast Listener Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`.<br>
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --mld`.<br>
 *Terminal 2.* Sends `MLDv1 Query` packet.   
 *Expected outcome* Sniffed `MLDv2 Query` packet in *Terminal 1*.   
 **Note:** Also other MLD packets were tested as well (e.g.`MLDv1 Report`, `MLDv1 Done`,`MLDv2 Report`).  
