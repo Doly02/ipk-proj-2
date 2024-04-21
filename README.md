@@ -3,7 +3,6 @@
 - Login: [xdolak09](https://www.vut.cz/lide/tomas-dolak-247220)
 - Email: <xdolak09@stud.fit.vutbr.cz>
 
-
 The goal of this second project in the subject of communication and site was to create a network sniffer. The assignment can be viewed [here](https://git.fit.vutbr.cz/NESFIT/IPK-Projects-2024/src/branch/master/Project%202/zeta).
 
 ## Table of contents
@@ -13,7 +12,6 @@ The goal of this second project in the subject of communication and site was to 
 - [Required theory](#required-theory)
     - [Packets](#packets)
 - [Resources](#resources)
-
 
 ## Requirements
 To build and run `ipk-sniffer`, you will need the following:
@@ -65,6 +63,9 @@ ipk-proj-1/
 │
 └── README.md               # Overview and documentation for the project
 ```
+
+## User's possibilities 
+
 
 ## Required theory
 In order to use the program correctly and to understand its output, it is necessary to have a certain base of knowledge in your head, which is described in this chapter.
@@ -181,7 +182,7 @@ ICMPv6 Code:              0
 0x0030: 00 00 00 00 00 01 80 00 75 a3 00 00 00 00        ........ u.....
 ```
 
-**Note** Sniffer is able to sniff ICMPv4 and ICMPv6 packet.
+**Note:** Sniffer is able to sniff ICMPv4 and ICMPv6 packet.
 
 #### Internet Group Management Protocol (IGMP)
 The Internet Group Management Protocol (IGMP) is a network layer protocol used primarily in IPv4 networks to facilitate the management of multicast groups. IGMP allows multiple devices to share a single IP address designated for multicasting, enabling them to receive the same data simultaneously. IGMP operates by allowing devices on a network to communicate their interest in joining or leaving multicast groups. Routers supporting IGMP listen to these transmissions to maintain a record of which devices are members of specific multicast groups. Multicast IP addresses, which range from 224.0.0.0 to 239.255.255.255, are used exclusively for these groups. When data is sent to a multicast group, the router replicates the packets and distributes them to all members of the group.[6]
@@ -271,6 +272,73 @@ ICMPv6 Subtype:           MLDv2 - Report
 0x0020: 8a 2e 03 70 73 34 ff 02 00 00 00 00 00 00 00 00  ...ps4.. ........
 0x0030: 00 00 00 00 00 16 8f 00 bd 74 00 00 00 00        ........ .t....
 ```
+
+## Testing
+The correct functionality and behaviour of ipk-sniffer has been tested in a number of ways - manually, by automatic tests and by [Wireshark](https://www.wireshark.org/).
+
+### Manual Testing
+The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
+
+#### Transmission Control Protocol Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`
+*Terminal 2.* Sends TCP packet from port 5200
+*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`
+*Terminal 2.* Sends TCP packet to port 5200
+*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`
+*Terminal 2.* Sends TCP packet to/from port 5200
+*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*
+
+#### User Datagram Protocol Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`
+*Terminal 2.* Sends UDP packet from port 5200
+*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`
+*Terminal 2.* Sends UDP packet to port 5200
+*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`
+*Terminal 2.* Sends UDP packet to/from port 5200
+*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*
+
+#### Multicast Listener Discovery Protocol Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`
+*Terminal 2.* Sends MLDv1 Query packet
+*Expected outcome* Sniffed MLDv2 Query packet in *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`
+*Terminal 2.* Sends `MLDv1 Report` packet
+*Expected outcome* Sniffed `MLDv1 Report` packet in *Terminal 1*
+
+#### Neighbor Discovery Protocol Test Scenarios
+*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`    
+*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet
+*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*
+
+*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`    
+*Terminal 2.* Sends `ICMPv6 Neighbor Solicitation` packet
+*Expected outcome* Sniffed `ICMPv6 Neighbor Solicitation` packet in *Terminal 1*
+
+**Note:** Also other NDP packet was tested as well (e.g.`ICMPv6 Router Advertisement`and `CMPv6 Neighbor Advertisement`)
+
+
+
+
+
+
+
+**Note:** Test prerequisity for all test scenarios running ipk-sniffer in *Terminal 2.*
+
+### Automatic Tests
+
+### Wireshark 
+
+### Tested Enviroment 
+Testing was processed on Ubuntu 22.04, Reference Ubuntu Virtual Machine And Ubuntu with Nix Enviroment. Settings of Ubuntu VM and Nix Enviroment is described [here](https://git.fit.vutbr.cz/NESFIT/IPK-Projects-2024/src/branch/master).
 
 ## Resources 
 [1] "What is a packet? | Network packet definition" [online]. [cited 2024-04-21]. Available at [https://www.cloudflare.com/learning/network-layer/what-is-a-packet/](https://www.cloudflare.com/learning/network-layer/what-is-a-packet/)
