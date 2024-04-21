@@ -292,72 +292,72 @@ The correct functionality and behaviour of ipk-sniffer has been tested in a numb
 The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
 
 #### Transmission Control Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`.  
-*Terminal 2.* Sends TCP packet from port 5200.  
-*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`.<br>
+*Terminal 2.* Sends TCP packet from port 5200.<br>
+*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*.<br>
   
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`.  
-*Terminal 2.* Sends TCP packet to port 5200.  
-*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`.<br>
+*Terminal 2.* Sends TCP packet to port 5200.<br>
+*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`.  
-*Terminal 2.* Sends TCP packet to/from port 5200.  
-*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`.<br>
+*Terminal 2.* Sends TCP packet to/from port 5200.<br>
+*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*.<br>
 
 #### User Datagram Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`.  
-*Terminal 2.* Sends UDP packet from port 5200.  
-*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`.<br>
+*Terminal 2.* Sends UDP packet from port 5200.<br>
+*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`.  
-*Terminal 2.* Sends UDP packet to port 5200.  
-*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`.<br>
+*Terminal 2.* Sends UDP packet to port 5200.<br>
+*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*.<br>
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`.  
-*Terminal 2.* Sends UDP packet to/from port 5200.  
-*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*.  
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`.<br>
+*Terminal 2.* Sends UDP packet to/from port 5200.<br>
+*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*.<br>
 
 #### Multicast Listener Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`.   
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`.<br>
 *Terminal 2.* Sends `MLDv1 Query` packet.   
 *Expected outcome* Sniffed `MLDv2 Query` packet in *Terminal 1*.   
 **Note:** Also other MLD packets were tested as well (e.g.`MLDv1 Report`, `MLDv1 Done`,`MLDv2 Report`).  
 
 #### Neighbor Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --ndp`.   
+*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --ndp`.<br>
 *Terminal 2.* Sends `ICMPv6 Router Solicitation` packet.   
 *Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*.   
 
 **Note:** Also other NDP packets were tested as well (e.g.`ICMPv6 Router Advertisement`, `ICMPv6 Neighbor Solicitation` and `CMPv6 Neighbor Advertisement`).  
 
 #### Address Resolution Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --arp`.     
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --arp`.<br>
 *Terminal 2.* Sends `ARP Request` packet.     
 *Expected outcome* Sniffed `ARP Request` packet in *Terminal 1*.    
 **Note:** Also other ARP packet was tested as well (e.g.`ARP Reply`).   
 
 #### Internet Control Message Protocol v4 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp4`.     
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp4`.<br>
 *Terminal 2.* Sends `ICMPv4 Echo Reply` packet.    
 *Expected outcome* Sniffed `ICMPv4 Echo Reply` packet in *Terminal 1*.   
 **Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv4 Echo Request`).   
 
 #### Internet Control Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.  
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.<br>
 *Terminal 2.* Sends `ICMPv6 Echo Request` packet.    
 *Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.     
 **Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv6 Echo Reply`).      
 
 #### Internet Control Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.      
-*Terminal 2.* Sends `ICMPv6 Echo Request` packet.     
-*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.     
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --icmp6`.<br>
+*Terminal 2.* Sends `ICMPv6 Echo Request` packet.<br>
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.
 **Note:** Also other ICMPv6 packet was tested as well (e.g.`ICMPv6 Echo Reply`), it's also possible during the actual use it is possible to sniff also MLD and NDL packets, as they are subtypes.   
 
 #### Internet Group Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --igmp`.      
-*Terminal 2.* Sends `IGMP Query` packet.     
-*Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*.     
+*Terminal 1.* Runs `ipk-sniffer` with option ``-i virt0 --igmp`.<br>
+*Terminal 2.* Sends `IGMP Query` packet.<br>
+*Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*.
 **Note:** Also other ICMPv6 packet was tested as well (e.g.`IGMP Report`,`IGMP Leave Group`).   
 
 The manual tests were performed on the virtual interface `virt0`, it was chosen as the test interface because of the network traffic, if the `wlp4s0`  environment was used, there would be a high probability that the captured packet would not be the right one.
