@@ -280,48 +280,48 @@ The correct functionality and behaviour of ipk-sniffer has been tested in a numb
 The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
 
 #### Transmission Control Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`
-*Terminal 2.* Sends TCP packet from port 5200
-*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --tcp/-t`  
+*Terminal 2.* Sends TCP packet from port 5200  
+*Expected outcome* Sniffed TCP packet with from source port 5200 *Terminal 1*  
+  
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`  
+*Terminal 2.* Sends TCP packet to port 5200  
+*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --tcp/-t`
-*Terminal 2.* Sends TCP packet to port 5200
-*Expected outcome* Sniffed TCP packet with destination port 5200 *Terminal 1*
-
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`
-*Terminal 2.* Sends TCP packet to/from port 5200
-*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --tcp/-t`  
+*Terminal 2.* Sends TCP packet to/from port 5200  
+*Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*  
 
 #### User Datagram Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`
-*Terminal 2.* Sends UDP packet from port 5200
-*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--source-port 5200 --udp/-u`  
+*Terminal 2.* Sends UDP packet from port 5200  
+*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`
-*Terminal 2.* Sends UDP packet to port 5200
-*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--destination-port 5200 --udp/-u`  
+*Terminal 2.* Sends UDP packet to port 5200  
+*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`
-*Terminal 2.* Sends UDP packet to/from port 5200
-*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--port/-p 5200 --udp/-u`  
+*Terminal 2.* Sends UDP packet to/from port 5200  
+*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*  
 
 #### Multicast Listener Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`
-*Terminal 2.* Sends MLDv1 Query packet
-*Expected outcome* Sniffed MLDv2 Query packet in *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`  
+*Terminal 2.* Sends MLDv1 Query packet  
+*Expected outcome* Sniffed MLDv2 Query packet in *Terminal 1*  
 
-*Terminal 1.* Runs `ipk-sniffer` with option `--mld`
-*Terminal 2.* Sends `MLDv1 Report` packet
-*Expected outcome* Sniffed `MLDv1 Report` packet in *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--mld`  
+*Terminal 2.* Sends `MLDv1 Report` packet  
+*Expected outcome* Sniffed `MLDv1 Report` packet in *Terminal 1*  
 
 #### Neighbor Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`    
-*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet
-*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*
+*Terminal 1.* Runs `ipk-sniffer` with option `--ndp`  
+*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet  
+*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*  
 
 *Terminal 1.* Runs `ipk-sniffer` with option `--ndp`    
-*Terminal 2.* Sends `ICMPv6 Neighbor Solicitation` packet
-*Expected outcome* Sniffed `ICMPv6 Neighbor Solicitation` packet in *Terminal 1*
+*Terminal 2.* Sends `ICMPv6 Neighbor Solicitation` packet  
+*Expected outcome* Sniffed `ICMPv6 Neighbor Solicitation` packet in *Terminal 1*  
 
 **Note:** Also other NDP packet was tested as well (e.g.`ICMPv6 Router Advertisement`and `CMPv6 Neighbor Advertisement`)
 
