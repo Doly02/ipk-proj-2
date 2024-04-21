@@ -85,7 +85,7 @@ def send_igmp_packet(packet, destination):
 # MLD Packets 
 def prep_mld1_query():
     """ 
-    Prepaires MLDv2 Query packet
+    Prepaires MLDv1 Query packet
     """
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
@@ -95,7 +95,7 @@ def prep_mld1_query():
 
 def prep_mld1_report():
     """ 
-    Prepaires MLDv2 Report packet
+    Prepaires MLDv1 Report packet
     """
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
     dst_address = 'FF02::1'  
@@ -105,7 +105,7 @@ def prep_mld1_report():
 
 def prep_mld1_done():
     """
-    Prepaires MLDv2 Done packet
+    Prepaires MLDv1 Done packet
     """
     # Create IPv6 Header
     src_address = '2001:0db8:85a3:0000:0000:8a2e:0370:7334'
@@ -175,6 +175,9 @@ def prep_ndp_ra():
     return ip/ra/lladdr/mtu/prefix_info
 
 def prep_ndp_na_broadcast():
+    """
+    Prepaires ICMPv6 Neighbor Advertisement packet
+    """
     src_address = '2001:db8:1:2::1'  
     dst_address = 'ff02::1'          
     ip = IPv6(src=src_address, dst=dst_address)

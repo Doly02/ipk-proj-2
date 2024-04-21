@@ -134,10 +134,10 @@ void Sniffer::startCapture() {
 
 void Sniffer::printPacket(const u_char *packet, const struct pcap_pkthdr *header) {
     struct ether_header *eth_header = (struct ether_header *)packet;
-    std::cout << "==========================================================================" << std::endl;
+    std::cout << "========================================================================== " << std::endl;
     std::cout << "Timestamp: "          << createPadding(15) << formatTimestamp(header->ts) << std::endl;
     std::cout << "Source MAC: "         << createPadding(14) << formatMac(eth_header->ether_shost) << std::endl;
-    std::cout << "Destination MAC: "    << createPadding(9) << formatMac(eth_header->ether_dhost) << std::endl;
+    std::cout << "Destination MAC: "    << createPadding(9)  << formatMac(eth_header->ether_dhost) << std::endl;
     std::cout << "Frame Length: "       << createPadding(12) << header->len << " bytes" << std::endl;
 
     // Check If Packet Is ARP
