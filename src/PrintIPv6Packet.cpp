@@ -38,6 +38,13 @@ void Sniffer::processIPv6Packet(const uint8_t *packet) {
     // Process The Header By Type
     int next_header = ip6_hdr->ip6_nxt;
     switch (next_header) {
+        case IPPROTO_UDP: {
+            struct udphdr *udp_hdr = (struct udphdr *)(packet + sizeof(struct ether_header) + sizeof(struct ip6_hdr));
+            std::cout << "Source Port: " << createPadding(13) << ntohs(udp_hdr->source) << std::endl;
+            std::cout << "Destination Port: " << createPadding(8) << ntohs(udp_hdr->dest) << std::endl;
+            std::cout << "UDP Length: " << createPadding(14) << ntohs(udp_hdr->len) << " bytes" << std::endl;
+            break;
+        }
         case IPPROTO_ICMPV6: {
             const struct icmp6_hdr *icmp6_hdr = findICMPv6Header(reinterpret_cast<const struct ip6_hdr *>(packet + sizeof(struct ether_header)));
             if (icmp6_hdr)
