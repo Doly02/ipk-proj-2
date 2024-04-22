@@ -1,7 +1,7 @@
 #
 #   Project: IPK Project 2 - Packet Sniffer
 #   Author:  Tomas Dolak
-#   File:    sniff_test.py
+#   File:    basic_tests.py
 #   Description: This Script is Used to Test the Packet Sniffer. Script First Runs the Sniffer And Then Sends a Packet of a Specific Type That Should Be Sniffed. 
 #   The Captured Packet is Evaluated Against the Expected Values.
 #
@@ -200,15 +200,15 @@ def check_packet(output,packet_type=None):
         expected_icmpv6_type = "129"
 
     # Regex to Capture Necessary Parts of the Packet
-    src_ip_match = re.search(r"src IP:[ ]*(\S+)", output)
-    dst_ip_match = re.search(r"dst IP:[ ]*(\S+)", output)
-    icmpv6_type_match = re.search(r"ICMPv6 type:[ ]*(\d+)", output)
+    src_ip_match = re.search(r"Source IP:[ ]*(\S+)", output)
+    dst_ip_match = re.search(r"Destination IP:[ ]*(\S+)", output)
+    icmpv6_type_match = re.search(r"ICMPv6 Type:[ ]*(\d+)", output)
     sender_mac_match = re.search(r"Sender MAC:[ ]*(\S+)", output)
     target_mac_match = re.search(r"Target MAC:[ ]*(\S+)", output)
     sender_ip_match = re.search(r"Sender IP:[ ]*(\S+)", output)
     target_ip_match = re.search(r"Target IP:[ ]*(\S+)", output)
-    icmpv4_type_match = re.search(r"ICMPv4 type:[ ]*(\d+)", output)
-    icmpv4_code_match = re.search(r"ICMPv4 code:[ ]*(\d+)", output)
+    icmpv4_type_match = re.search(r"ICMPv4 Type:[ ]*(\d+)", output)
+    icmpv4_code_match = re.search(r"ICMPv4 Code:[ ]*(\d+)", output)
 
     if src_ip_match and dst_ip_match and icmpv6_type_match:
         src_ip = src_ip_match.group(1)
@@ -234,8 +234,8 @@ def check_packet(output,packet_type=None):
                 print(f"Packet Fully Matched {packet_type}")
                 return True
     else:
-        dst_ip_match = re.search(r"dst IP:[ ]*(\S+)", output)
-        icmpv4 = re.search(r"IGMP type:[ ]*(\d+)", output)
+        dst_ip_match = re.search(r"Destination IP:[ ]*(\S+)", output)
+        icmpv4 = re.search(r"IGMP Type:[ ]*(\d+)", output)
 
         if (packet_type in ['IGMP_QUERY','IGMP_REPORT','IGMP_LEAVE'] and dst_ip_match and icmpv4):
             dst_ip = dst_ip_match.group(1)
@@ -276,7 +276,7 @@ def check_packet(output,packet_type=None):
     return False
 
 
-if __name__ == "__main__":
+def basic_tests():
     from queue import Queue
     packet_types = ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON',         # MLDv1 and MLDv2
                     'NDP_RS','NDP_NS','NDP_RA','NDP_NA',                    # NDP
