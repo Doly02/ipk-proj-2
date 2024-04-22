@@ -83,9 +83,8 @@ ipk-proj-1/
 ```
 
 ## User's possibilities 
-This section outlines the different commands and parameters you can use to interact with the program and how they affect its behavior:
+This section outlines the different commands and parameters you can use to interact with the program and how they affect its behavior:  
 
-### Interface Selection
 - `-i <interface>` or `--interface <interface>`: Specify a network interface for packet sniffing. If no interface is specified, or if the interface flag is used without a value, the program will display a list of all active network interfaces.
 - `-t` or `--tcp`: Targets TCP segments. This can be further refined by using `-p <port>` or `--port-*` to filter by specific ports.
 - `-u` or `--udp`: Targets UDP datagrams, with the same optional port filtering as TCP.
