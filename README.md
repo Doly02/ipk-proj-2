@@ -19,6 +19,9 @@ The goal of this second project in the subject of communication and site was to 
     - [Address Resolution Protocol (ARP)](#address-resolution-protocol-arp)
     - [Neighbor Discovery Protocol (NDP)](#neighbor-discovery-protocol-ndp)
     - [Multicast Listener Discovery Protocol (MLD)](#multicast-listener-discovery-protocol-mld)
+- [Implementation](#implementation)
+    - [Implementation Description](#implementation-description)
+    - [UML Diagram](#uml-diagram)
 - [Testing](#testing)
     - [Manual Testing](#manual-testing)
     - [Automated Testing](#automated-testing)
@@ -37,7 +40,9 @@ To build and run `ipk-sniffer`, you will need the following:
 - **Python Scapy**: Scapy is a packet manipulation tool for computer networks. Library is required for run `python3` script which checks that all packet subsets that need to be captured are captured by the sniffer.  
 
 The `Scapy` library can be installed on Ubuntu by command:
-`pip install scapy`
+```
+pip install scapy 
+```
 
 ### Build tools
 - **Make**: This project uses a `Makefile` for easy building and testing. Ensure you have Make installed on your system.
@@ -80,7 +85,7 @@ ipk-proj-1/
 
 
 ## Required theory
-In order to use the program correctly and to understand its output, it is necessary to have a certain base of knowledge in your head, which is described in this chapter.
+In order to use the program correctly and to understand its output, it is necessary to have a certain base of knowledge in your mind, which is described in this chapter.
 The chapter also contains examples of the program output for specific protocol.
 
 ### Packets  
@@ -288,9 +293,9 @@ ICMPv6 Subtype:           MLDv2 - Report
 this chapter is dedicated to testing and showing the UML diagram of the program.
 
 ### Implementation Description
-The program uses the pcap.h library which makes it easy to sniff packets. At the beginning of the program run a filter is built according to the BH form, this filter is then compiled by the pcap_compile function. Then the device is opened on the defined interface and the filter is applied. Next, the startCapture method is run, which contains a call to the pcap_loop function that sniffs packets according to the filter and then the contents are printed to the terminal using the printPacket method.
+The program uses the `pcap.h` library that is based on `libpcap` library which makes it easy to sniff packets. At the beginning of the program run a filter is built according to the BPF (Berkeley Packet Filter) syntax from programs arguments, this filter is then compiled by the `pcap_compile` function. Then the device is opened with `pcap_open_live` (and it's running in promiscuous mode) on the defined interface and the filter is applied. Next, the `startCapture` method is run, which contains a call to the `pcap_loop` function that sniffs packets according to the filter and then the contents are printed to the terminal using the `printPacket` method. [10] [11] [12]
 
-### UML Diagrams
+### UML Diagram
 The program run can be shown by the following program flow diagram.
 
 <p align="center">
@@ -299,7 +304,7 @@ The program run can be shown by the following program flow diagram.
 </p>
 
 ## Testing
-The correct functionality and behaviour of ipk-sniffer has been tested in a number of ways - manually, by automatic tests and by [Wireshark](https://www.wireshark.org/).
+The correct functionality and behaviour of `ipk-sniffer` has been tested in a number of ways - manually, by automatic tests and by [Wireshark](https://www.wireshark.org/).
 
 ### Manual Testing
 The manual testing of the program was ongoing at the beginning of the program development and is divided into two parts. To check the program properly, python scripts were created to send a certain packet and ipk-sniffer was to capture it. See the tests/send_packet folder containing the python scripts.
@@ -348,10 +353,10 @@ Automatic tests are an extension of manual tests, i.e. they perform the same tes
 ```
 sudo python3 tests.py
 ```
-3. See the output: 
+3. Test output should be: 
 <p align="center">
   <img src="docs/pics/output/test_output.png" alt="Output from tests" width="480"/><br>
-  <em>Output from tests</em><br>
+  <em>Output From Tests</em><br>
 </p>
 
 #### Sniff 100 of Packets of Same Group Test Scenarios
@@ -392,3 +397,9 @@ Testing was processed on Ubuntu 22.04, Reference Ubuntu Virtual Machine And Ubun
 [8] "Neighbor Discovery Protocol – NDP Overview" [online]. [cited 2024-04-21]. Available at [https://study-ccna.com/ndp-neighbor-discovery-protocol/](https://study-ccna.com/ndp-neighbor-discovery-protocol/)
 
 [9] "IP Multicast Configuration Guide, Cisco IOS XE 17.x" [online]. Chapter: IPv6 Multicast Listener Discovery Protocol. March 2022. [cited 2024-04-21]. Available at [https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-multicast/b-ip-multicast/m_ipv6-mcast-mld-xe.html](https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/ip-multicast/b-ip-multicast/m_ipv6-mcast-mld-xe.html)
+
+[10] "pcap_compile(3) - Linux man page" [online]. [cited 2024-04-22]. Available at [https://linux.die.net/man/3/pcap_compile](https://linux.die.net/man/3/pcap_compile)
+
+[11] "pcap_open_live(3) - Linux man page" [online]. [cited 2024-04-22]. Available at [https://linux.die.net/man/3/pcap_open_live](https://linux.die.net/man/3/pcap_open_live)  
+
+[12] "pcap_loop(3) - Linux man page" [online]. [cited 2024-04-22]. Available at [https://linux.die.net/man/3/pcap_loop](https://linux.die.net/man/3/pcap_loop)  
