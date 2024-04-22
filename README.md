@@ -294,7 +294,7 @@ The program uses the pcap.h library which makes it easy to sniff packets. At the
 The program run can be shown by the following program flow diagram.
 
 <p align="center">
-  <img src="docs/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="500"/><br>
+  <img src="docs/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="480"/><br>
   <em>Program Flow Diagram Showing ipk-sniffer</em><br>
 </p>
 
@@ -350,7 +350,7 @@ sudo python3 tests.py
 ```
 3. See the output: 
 <p align="center">
-  <img src="docs/pics/output/test-output.png" alt="Output from tests" width="500"/><br>
+  <img src="docs/pics/output/test_output.png" alt="Output from tests" width="480"/><br>
   <em>Output from tests</em><br>
 </p>
 
