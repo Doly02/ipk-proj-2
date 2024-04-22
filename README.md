@@ -294,7 +294,7 @@ The program uses the pcap.h library which makes it easy to sniff packets. At the
 The program run can be shown by the following program flow diagram.
 
 <p align="center">
-  <img src="docs/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="450"/><br>
+  <img src="docs/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="500"/><br>
   <em>Program Flow Diagram Showing ipk-sniffer</em><br>
 </p>
 
@@ -341,6 +341,18 @@ The manual tests were performed on the virtual interface `virt0`, it was chosen 
 
 ### Automated Testing
 Automatic tests are an extension of manual tests, i.e. they perform the same tests and at the same time extend them, thanks to automation it was possible to expose the program to tests with a large number of captured packets, some of the test scenarios are described below.
+
+#### How To Run Automated Tests On My Own?
+1. Before running the automatic tests, make sure you have the Scipy library installed (if not, how to install the library is described above)
+2. Go to tests folder and run:
+```
+sudo python3 tests.py
+```
+3. See the output: 
+<p align="center">
+  <img src="docs/pics/output/test-output.png" alt="Output from tests" width="500"/><br>
+  <em>Output from tests</em><br>
+</p>
 
 #### Sniff 100 of Packets of Same Group Test Scenarios
 *Test Case:* Runs `ipk-sniffer` with option `-i wlp4s0 --group -n 100`, where packet `group` can be `tcp`,`udp`,`ndp`,`icmp4`,`icmp6`,`igmp`.  
