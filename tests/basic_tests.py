@@ -277,6 +277,7 @@ def check_packet(output,packet_type=None):
 
 
 def basic_tests():
+    print(Fore.LIGHTMAGENTA_EX + "Starting: Basic Testing")
     from queue import Queue
     packet_types = ['MLD2_REP', 'MLD1_QUE', 'MLD1_REP', 'MLD1_DON',         # MLDv1 and MLDv2
                     'NDP_RS','NDP_NS','NDP_RA','NDP_NA',                    # NDP

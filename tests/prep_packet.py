@@ -12,6 +12,7 @@ from scapy.all import ICMPv6ND_RS, ICMPv6ND_RA, ICMPv6ND_NS, ICMPv6ND_NA, ICMPv6
 from scapy.all import IPv6, ICMPv6EchoRequest, ICMPv6EchoReply
 from scapy.all import ICMPv6NDOptMTU, ICMPv6NDOptPrefixInfo,ICMPv6NDOptDstLLAddr
 from scapy.all import ARP, Ether, sendp
+from scapy.all import IP, TCP, UDP 
 from scapy.all import IP, ICMP
 import netifaces as ni # To get the interface IP address
 import socket
@@ -256,3 +257,15 @@ def prep_icmpv6_echo_reply():
     dst_ip = 'ff02::1'
     packet = IPv6(src=src_ip, dst=dst_ip) / ICMPv6EchoReply(data="Reply")
     return packet
+
+def prep_udp():
+    ether = Ether(dst="ff:ff:ff:ff:ff:ff")  # Broadcast MAC adresa
+    ip = IP(dst="192.168.1.255")            # Broadcast IP
+    udp = UDP(dport=123)                    
+    return ether/ip/udp    
+    
+def prep_tcp():
+    ether = Ether(dst="ff:ff:ff:ff:ff:ff")  # Broadcast MAC adresa
+    ip = IP(dst="192.168.1.255")            # Broadcast IP
+    tcp = TCP(dport=80, flags="S")
+    return ether/ip/tcp
