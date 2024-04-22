@@ -59,7 +59,7 @@ class Sniffer {
         int maxPackets;
         pcap_t* deviceHandle;
         static Sniffer* currentInstance; 
-
+ 
         void setupDevice();
         
         void applyFilter();

@@ -80,6 +80,10 @@ int SnifferConfig::parseArguments(int argc, char *argv[]) {
         } else if (arg == "-n") {
             if (i + 1 < argc) {
                 num = std::stoi(argv[++i]);
+                if (num < 1) {
+                    fprintf(stderr, "Number of Packets Must Be Greater Than 0\n");
+                    exit(ERROR);
+                }
             }
         }
         else if (arg == "--arp") {

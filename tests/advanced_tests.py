@@ -100,12 +100,11 @@ def advanced_tests():
 
         for _ in range(num1):
             send_packet(pct_type, interface)
-            time.sleep(0.1)
             
         for _ in range(num2):
             send_packet(pct_type,interface)
             
-        sniffer_thread.join(timeout=10)
+        sniffer_thread.join(timeout=15)
         output = "".join(list(output_queue.queue))
 
         if check_packet(output, sum, pct_type):
