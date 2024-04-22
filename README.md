@@ -284,6 +284,19 @@ ICMPv6 Subtype:           MLDv2 - Report
 0x0020: 8a 2e 03 70 73 34 ff 02 00 00 00 00 00 00 00 00  ...ps4.. ........
 0x0030: 00 00 00 00 00 16 8f 00 bd 74 00 00 00 00        ........ .t....
 ```
+## Implementation
+this chapter is dedicated to testing and showing the UML diagram of the program.
+
+### Implementation Description
+The program uses the pcap.h library which makes it easy to sniff packets. At the beginning of the program run a filter is built according to the BH form, this filter is then compiled by the pcap_compile function. Then the device is opened on the defined interface and the filter is applied. Next, the startCapture method is run, which contains a call to the pcap_loop function that sniffs packets according to the filter and then the contents are printed to the terminal using the printPacket method.
+
+### UML Diagrams
+The program run can be shown by the following program flow diagram.
+
+<p align="center">
+  <img src="doc/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="450"/><br>
+  <em>Program Flow Diagram Showing ipk-sniffer</em><br>
+</p>
 
 ## Testing
 The correct functionality and behaviour of ipk-sniffer has been tested in a number of ways - manually, by automatic tests and by [Wireshark](https://www.wireshark.org/).
