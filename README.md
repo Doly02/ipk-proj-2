@@ -3,7 +3,7 @@
 - Login: [xdolak09](https://www.vut.cz/lide/tomas-dolak-247220)
 - Email: <xdolak09@stud.fit.vutbr.cz>
 
-The goal of this second project in the subject of communication and site was to create a network sniffer. The assignment can be viewed [here](https://git.fit.vutbr.cz/NESFIT/IPK-Projects-2024/src/branch/master/Project%202/zeta).
+The goal of this second project in the subject computer communications and networks was to create a network sniffer. The assignment can be viewed [here](https://git.fit.vutbr.cz/NESFIT/IPK-Projects-2024/src/branch/master/Project%202/zeta).
 
 ## Table of contents
 - [Requirements](#requirements)
