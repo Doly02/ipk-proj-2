@@ -71,7 +71,7 @@ std::string Sniffer::createPadding(int size) {
 */
 void Sniffer::setupDevice() {
     // Open Device for Packet Capture With Set Buffer Size And With TimeOut
-    deviceHandle = pcap_open_live(interfaceName.c_str(), BUFSIZ, 1, 1000, errbuf);
+    deviceHandle = pcap_open_live(interfaceName.c_str(), BUFSIZ, PROMISC_MODE, 1000, errbuf);
     if (deviceHandle == nullptr) {
         throw std::runtime_error("pcap_open_live failed: " + std::string(errbuf));  // If Fails Throw Exception
     }

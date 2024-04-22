@@ -24,6 +24,9 @@ constexpr int JUST_INTERFACE = 1;
 constexpr int CORRECT = 0;
 constexpr int ERROR = -2;
 
+
+constexpr int PROMISC_MODE = 1;
+
 /************************************************/
 /*             NDP Packet Types                 */
 /************************************************/
