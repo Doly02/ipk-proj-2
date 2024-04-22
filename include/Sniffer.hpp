@@ -64,8 +64,6 @@ class Sniffer {
         
         void applyFilter();
         
-        void processMLDPacket(const u_char *packet, const struct pcap_pkthdr *header);
-    
     public:
     
         Sniffer(const std::string& interfaceName, const std::string& filter, int maxPackets);

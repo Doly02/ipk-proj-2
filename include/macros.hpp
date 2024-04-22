@@ -22,6 +22,7 @@
 /************************************************/
 constexpr int JUST_INTERFACE = 1;
 constexpr int CORRECT = 0;
+constexpr int ERROR = -2;
 
 /************************************************/
 /*             NDP Packet Types                 */
@@ -51,5 +52,26 @@ constexpr int NEIGHBOR_ADVERTISEMENT = 136;
  *          That There is a More Efficient Route to Route Traffic to Improve Overall Network Performance.
  */
 constexpr int REDIRECT = 137;
+
+/************************************************/
+/*             MLD Packet Types                 */
+/************************************************/
+
+/**
+ * @brief
+*/
+constexpr int MLDv1QUERY = 130;
+/**
+ * @brief
+*/
+constexpr int MLDv1REPORT = 131;
+/**
+ * @brief
+*/
+constexpr int MLDv1DONE = 132;
+/**
+ * @brief
+*/
+constexpr int MLDv2REPORT = 143;
 
 #endif // MACROS_HPP

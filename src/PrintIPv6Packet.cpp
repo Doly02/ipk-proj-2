@@ -21,25 +21,21 @@
 #include "../include/Sniffer.hpp"
 #include "../include/macros.hpp"
 /************************************************/
-/*             Function Implementation          */
+/*             Class Implementation             */
 /************************************************/
 void Sniffer::processIPv6Packet(const uint8_t *packet) {
-    // Extrahování IPv6 hlavičky
     struct ip6_hdr *ip6_hdr = (struct ip6_hdr *)(packet + sizeof(struct ether_header));
 
-    // Bufery pro zdrojovou a cílovou IPv6 adresu
     char src_ip[INET6_ADDRSTRLEN];
     char dst_ip[INET6_ADDRSTRLEN];
 
-    // Konverze zdrojové a cílové adresy do čitelné formy
     inet_ntop(AF_INET6, &ip6_hdr->ip6_src, src_ip, INET6_ADDRSTRLEN);
     inet_ntop(AF_INET6, &ip6_hdr->ip6_dst, dst_ip, INET6_ADDRSTRLEN);
 
-    // Výpis zdrojové a cílové adresy
     std::cout << "Source IP: " << createPadding(15) << src_ip << std::endl;
     std::cout << "Destination IP: " << createPadding(10) << dst_ip << std::endl;
 
-    // Zpracování další hlavičky dle typu
+    // Process The Header By Type
     int next_header = ip6_hdr->ip6_nxt;
     switch (next_header) {
         case IPPROTO_ICMPV6: {
@@ -94,16 +90,16 @@ const struct icmp6_hdr* Sniffer::findICMPv6Header(const struct ip6_hdr *ip6_hdr)
 
 void Sniffer::processMLDMessage(const struct icmp6_hdr* icmp6_hdr) {
     switch (icmp6_hdr->icmp6_type) {
-        case 130:  // MLDv1 Query
+        case MLDv1QUERY:  // MLDv1 Query
             std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Query" << std::endl;
             break;
-        case 131:  // MLDv1 Report
+        case MLDv1REPORT:  // MLDv1 Report
             std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Report" << std::endl;
             break;
-        case 132:  // MLDv1 Done
+        case MLDv1DONE:  // MLDv1 Done
             std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv1 - Done" << std::endl;
             break;
-        case 143:  // MLDv2 Report
+        case MLDv2REPORT:  // MLDv2 Report
             std::cout << "ICMPv6 Subtype: " << createPadding(10) << "MLDv2 - Report" << std::endl;;
             break;
         default:

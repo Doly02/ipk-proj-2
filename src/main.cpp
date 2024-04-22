@@ -27,7 +27,7 @@
 /************************************************/
 int main(int argc, char *argv[]) {
     
-    int retVal = 0;
+    int retVal = ERROR;
     SnifferConfig config;
     retVal = config.parseArguments(argc, argv);
     if (JUST_INTERFACE == retVal) {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        return -2;
+        return ERROR;
     }
-    return 0;
+    return CORRECT;
 }
