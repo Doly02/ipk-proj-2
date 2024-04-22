@@ -9,6 +9,7 @@ The goal of this second project in the subject computer communications and netwo
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Project organization](#project-organization)
+- [User's Possibilities](#users-possibilities)
 - [Required theory](#required-theory)
     - [Packets](#packets)
     - [Why we use packets?](#why-we-use-packets)
@@ -82,7 +83,24 @@ ipk-proj-1/
 ```
 
 ## User's possibilities 
+This section outlines the different commands and parameters you can use to interact with the program and how they affect its behavior:
 
+### Interface Selection
+- `-i <interface>` or `--interface <interface>`: Specify a network interface for packet sniffing. If no interface is specified, or if the interface flag is used without a value, the program will display a list of all active network interfaces.
+- `-t` or `--tcp`: Targets TCP segments. This can be further refined by using `-p <port>` or `--port-*` to filter by specific ports.
+- `-u` or `--udp`: Targets UDP datagrams, with the same optional port filtering as TCP.
+- `--icmp4`: Displays only ICMPv4 packets.
+- `--icmp6`: Displays only ICMPv6 echo request/response packets.
+- `--arp`: Displays only ARP frames.
+- `--ndp`: Displays only NDP packets, a subset of ICMPv6.
+- `--igmp`: Displays only IGMP packets.
+- `--mld`: Displays only MLD packets, another subset of ICMPv6.
+- `-p <port>`: Filters TCP or UDP packets to include only those with the specified port number in either the source or destination.
+- `--port-destination <port>`: Filters packets where the destination port matches the specified value.
+- `--port-source <port>`: Filters packets where the source port matches the specified value.
+- `-n <number>`: Specifies the number of packets to display. If not set, the default behavior is to display only one packet.
+
+All arguments can be provided in any order, giving you flexibility in how you configure the packet sniffing session. If there are specified more than one packet group, the sniffed packets can be a mix of their specified groups.
 
 ## Required theory
 In order to use the program correctly and to understand its output, it is necessary to have a certain base of knowledge in your mind, which is described in this chapter.
