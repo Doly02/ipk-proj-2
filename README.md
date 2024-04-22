@@ -294,7 +294,7 @@ The program uses the pcap.h library which makes it easy to sniff packets. At the
 The program run can be shown by the following program flow diagram.
 
 <p align="center">
-  <img src="doc/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="450"/><br>
+  <img src="docs/pics/uml/sniffer-program-flow.png" alt="Program Flow Diagram Showing ipk-sniffer" width="450"/><br>
   <em>Program Flow Diagram Showing ipk-sniffer</em><br>
 </p>
 
@@ -316,62 +316,26 @@ The manual testing of the program was ongoing at the beginning of the program de
 *Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --port/-p 5200 --tcp/-t`.<br>
 *Terminal 2.* Sends TCP packet to/from port 5200.<br>
 *Expected outcome* Sniffed TCP packet with source/destination port 5200 *Terminal 1*.<br>
-
-#### User Datagram Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --source-port 5200 --udp/-u`.<br>
-*Terminal 2.* Sends UDP packet from port 5200.<br>
-*Expected outcome* Sniffed UDP packet with from source port 5200 *Terminal 1*.<br>
-
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --destination-port 5200 --udp/-u`.<br>
-*Terminal 2.* Sends UDP packet to port 5200.<br>
-*Expected outcome* Sniffed UDP packet with destination port 5200 *Terminal 1*.<br>
-
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --port/-p 5200 --udp/-u`.<br>
-*Terminal 2.* Sends UDP packet to/from port 5200.<br>
-*Expected outcome* Sniffed UDP packet with source/destination port 5200 *Terminal 1*.<br>
-
-#### Multicast Listener Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --mld`.<br>
-*Terminal 2.* Sends `MLDv1 Query` packet.   
-*Expected outcome* Sniffed `MLDv2 Query` packet in *Terminal 1*.   
-**Note:** Also other MLD packets were tested as well (e.g.`MLDv1 Report`, `MLDv1 Done`,`MLDv2 Report`).  
-
-#### Neighbor Discovery Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --ndp`.<br>
-*Terminal 2.* Sends `ICMPv6 Router Solicitation` packet.   
-*Expected outcome* Sniffed `ICMPv6 Router Solicitation` packet in *Terminal 1*.   
-
-**Note:** Also other NDP packets were tested as well (e.g.`ICMPv6 Router Advertisement`, `ICMPv6 Neighbor Solicitation` and `CMPv6 Neighbor Advertisement`).  
-
-#### Address Resolution Protocol Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --arp`.<br>
-*Terminal 2.* Sends `ARP Request` packet.     
-*Expected outcome* Sniffed `ARP Request` packet in *Terminal 1*.    
-**Note:** Also other ARP packet was tested as well (e.g.`ARP Reply`).   
+**Note:** UDP with option `--udp` was tested with same test scenarios that was described in TCP test scenarios.  
 
 #### Internet Control Message Protocol v4 Test Scenarios
 *Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --icmp4`.<br>
 *Terminal 2.* Sends `ICMPv4 Echo Reply` packet.    
 *Expected outcome* Sniffed `ICMPv4 Echo Reply` packet in *Terminal 1*.   
-**Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv4 Echo Request`).   
+**Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv4 Echo Request`) and packets from ARP protocol that are used in IPv4 networks was tested equaly
+with option `--arp` (sniffed packets: `ARP Reply`, `ARP Request`).   
 
 #### Internet Control Message Protocol v6 Test Scenarios
 *Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --icmp6`.<br>
 *Terminal 2.* Sends `ICMPv6 Echo Request` packet.    
-*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.     
-**Note:** Also other ICMPv4 packet was tested as well (e.g.`ICMPv6 Echo Reply`).      
+*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.<br>
+**Note:** Also other ICMPv6 packet was tested as well (e.g.`ICMPv6 Echo Reply`), ICMPv6 subtypes MLD with option `--mld` (packets in MLD group: `MLDv1 Report`, `MLDv1 Done`,`MLDv2 Report`,`MLDv1 Query`) and NDP packets with option `--ndp` (packets in NDP group: `ICMPv6 Router Advertisement`, `ICMPv6 Neighbor Solicitation`,`ICMPv6 Router Solicitation` and `CMPv6 Neighbor Advertisement`).      
 
-#### Internet Control Message Protocol v6 Test Scenarios
-*Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --icmp6`.<br>
-*Terminal 2.* Sends `ICMPv6 Echo Request` packet.<br>
-*Expected outcome* Sniffed `ICMPv6 Echo Request` packet in *Terminal 1*.
-**Note:** Also other ICMPv6 packet was tested as well (e.g.`ICMPv6 Echo Reply`), it's also possible during the actual use it is possible to sniff also MLD and NDL packets, as they are subtypes.   
-
-#### Internet Group Message Protocol v6 Test Scenarios
+#### Internet Group Message Protocol Test Scenarios
 *Terminal 1.* Runs `ipk-sniffer` with option `-i virt0 --igmp`.<br>
 *Terminal 2.* Sends `IGMP Query` packet.<br>
-*Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*.
-**Note:** Also other ICMPv6 packet was tested as well (e.g.`IGMP Report`,`IGMP Leave Group`).   
+*Expected outcome* Sniffed `IGMP Query` packet in *Terminal 1*.<br>
+**Note:** Also other IGMP packet was tested as well (e.g.`IGMP Report`,`IGMP Leave Group`).   
 
 The manual tests were performed on the virtual interface `virt0`, it was chosen as the test interface because of the network traffic, if the `wlp4s0`  environment was used, there would be a high probability that the captured packet would not be the right one.
 
