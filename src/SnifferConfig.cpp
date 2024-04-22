@@ -110,6 +110,10 @@ int SnifferConfig::parseArguments(int argc, char *argv[]) {
             printUsage();
             exit(0);
         }
+        else {
+            fprintf(stderr, "Unknown Program Parameter\n");
+            exit(ERROR);
+        }
     }
     return 0;
 }
